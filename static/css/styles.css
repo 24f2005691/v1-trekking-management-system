@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+:root{
+    --primary: #1F5F8B;             /* Trek Blue */
+    --primary-hover: #184C70;       /* Deep Blue */
+
+    --secondary: #B71C1C;           /* Trail Red */
+    --secondary-hover: #8E1414;     /* Dark Red */
+
+    --accent: #5DA9D6;              /* Sky Blue */
+    --light-accent: #ebf8ff;              /* Sky Blue */
+
+    --background: #F8FAFC;          /* Soft White */
+    --card-bg: #FFFFFF;             /* White */
+
+    --border: #D9E1E8;              /* Light Gray */
+
+    --text-primary: #243447;        /* Slate */
+    --text-secondary: #607080;      /* Muted Slate */
+}
+*{
+    color: var(--primary);
+}
+a{
+    color: var(--accent) !important;
+}
+body{
+    min-height: 100vh;
+    margin: 0;
+    padding-bottom: 60px;
+}
+footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: auto;
+    background-color: var(--text-primary);
+    color: var(--background);
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0px 0px 5px 1px var(--text-primary);
+}
+.logo{
+    padding: 5px;
+    height: 55px;
+}
+.navbar{
+    box-shadow: 0px 0px 10px 1px var(--text-primary);
+}
+.navigation-heading{
+    color: var(--text-primary);
+    padding: 15px 0 0 15px !important;
+}
+.nav-link{
+    color: var(--text-primary) !important;
+    background-color: var(--background) !important;
+    border-radius: 5px;
+    padding-left: 15px !important;
+    padding: 10px !important;
+}
+.nav-link:hover{
+    background-color: var(--border) !important;
+    color: var(--primary-hover) !important;
+}
+.nav-actions{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.login-btn{
+    color: var(--primary) !important;
+    background: transparent;
+    border: 2px solid var(--primary);
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+.login-btn:hover{
+    background: rgba(31, 95, 139, 0.08);
+    transform: translateY(-2px);
+}
+.register-btn{
+    background: var(--primary);
+    border: none;
+    color: white !important;
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+.register-btn:hover{
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+.form-container{
+    margin-top: 60px;
+}
+.form-content{
+    box-shadow: 0 0 5px var(--text-secondary);
+    width: 100%;
+    width: 500px;
+    padding: 3em;
+    border-radius: 1rem;
+    background: white;
+}
+.form-field{
+    display: flex;
+    flex-direction: column;
+}
+.center{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+/* login register pages */
+.login-register-heading{
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 2rem;
+}
+.accent{
+    color: var(--accent);
+}
+.user-type-radio{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.search-navactions{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+.primary-information{
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+.primary-information th,
+.primary-information td{
+    padding: 0.8rem;
+}
+.primary-information th{
+    width: 35%;
+    text-align: left;
+}
+.primary-information td:first-of-type{
+    width: 25%;
+}
+.primary-information td:last-of-type{
+    width: 40%;
+    display: flex;
+    float: right;
+}
+.primary-information a{
+    padding: 10px;
+    color: var(--primary) !important;
+    font-weight: 500;
+    background-color: white;
+    border: 1.5px solid var(--primary);
+    border-radius: 1rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+.primary-information a:hover{
+    color: var(--primary-hover) !important;
+    transform: translateY(-2px);
+
+}
+.primary-information-heading{
+    padding: 1rem;
+    color: var(--primary);
+}
+.primary-information tr:nth-child(odd){
+    background: var(--light-accent);
+}
+.primary-information tr:nth-child(even){
+}

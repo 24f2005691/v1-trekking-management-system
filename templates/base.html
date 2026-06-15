@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Trekking Management System{% endblock title %}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('homepage') }}">
+                <img src="{{url_for('static', filename='images/logo.svg')}}" class="logo" alt="Logo">
+            </a>
+            
+            <div class="search-navactions">
+            {% block search %}
+            {% endblock search %}
+            <div class="nav-actions">
+                {% if "user_id" not in session %}
+                <div class="login-register">
+                    <button class="login-btn" onclick="window.location.href='{{ url_for('auth.user_login')}}'">Login</button>
+                    <button class="register-btn" onclick="window.location.href='{{ url_for('auth.user_registration')}}'">Register</button>
+                </div>
+                {% endif %}
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#menu">
+                    <span class="navbar-toggler-icon">
+                    </span>
+                </button>
+            </div>
+            </div>
+            
+            <div class="offcanvas offcanvas-end" id="menu">
+                <div class="offcanvas-header">
+                    <h5 class="navigation-heading">Navigation Links</h5>
+                    <button type="button" class="btn-close"
+                    data-bs-dismiss="offcanvas"></button>
+                </div>
+
+                <!-- hamburger menu links -->
+
+                <div class="offcanvas-body">
+                    <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
+                    {% if "user_id" in session %}
+                        {% if session.get("role") == "admin" %}
+                            <a class="nav-link" href="{{ url_for('admin.dashboard')}}">Go to dashboard</a>
+                        {% endif %}
+                        {% if session.get("role") == "trekker" %}
+                            <a class="nav-link" href="{{ url_for('user.dashboard')}}">Go to dashboard</a>
+                        {% endif %}
+                        {% if session.get("role") == "staff" %}
+                            <a class="nav-link" href="{{ url_for('staff.dashboard')}}">Go to dashboard</a>
+                        {% endif %}
+                    {% endif %}
+                    {% if "user_id" not in session %}
+                        <a class="nav-link" href="{{ url_for('auth.user_login') }}">Login</a>
+                        <a class="nav-link" href="{{ url_for('auth.user_registration') }}">Register</a>
+                    {% endif %}
+                    {% if "user_id" in session %}
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+    
+    {% block body %}
+    {% endblock body %}
+    
+    <footer>
+        Priyal Patel - Trekking Management System &copy; 2026
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+<!-- Search
+<form class="d-flex" role="search">
+    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+-->

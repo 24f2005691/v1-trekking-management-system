@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+{% block search %}
+    <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+{% endblock search %}
+
+{% block body %}
+
+<h2 style="color: var(--primary); padding: 10px">Welcome to the Admin Dashboard.</h2>
+
+<table class="primary-information">
+    <tr colspan="3"><h3 class="primary-information-heading">Primary information:</h3></tr>
+    <tr>
+        <th>Total Treks:</th>
+        <td>{{ total_treks }}</td>
+        <td><a href="{{ url_for('admin.manage_treks') }}">Manage Treks</a></td>
+    </tr>
+    <tr>
+        <th>Total Users:</th>
+        <td>{{ total_users }}</td>
+        <td><a href="{{ url_for('admin.manage_users') }}">Manage Users</a></td>
+    </tr>
+    <tr>
+        <th>Total staff:</th>
+        <td>{{ total_staff }}</td>
+        <td><a href="{{ url_for('admin.manage_staff') }}">Manage Staff</a></td>
+    </tr>
+    <tr>
+        <th>Total Bookings:</th>
+        <td>{{ total_bookings }}</td>
+        <td><a href="{{ url_for('admin.view_bookings') }}">View Bookings</a></td>
+    </tr>
+</table>
+
+{% endblock body %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %} User Registration {% endblock title %}
+
+{% block body %}
+
+<div class="form-container center">
+<form action="{{url_for('auth.user_registration')}}" method="POST">
+    <div class="form-content">
+        <h1 class="center login-register-heading">User Registration</h1>
+    
+    <div class="form-field">
+        <label class="form-label">Full Name</label>
+        <input 
+            type="text"
+            name="name"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="form-field">
+        <label class="form-label">Email Address</label>
+        <input
+            type="email"
+            name="email"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="form-field">
+        <label class="form-label">Phone Number</label>
+        <input
+            type="tel"
+            name="phone"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="form-field user-type-radio">
+    <label class="form-label">Register As:</label>
+
+    <div>
+        <input
+            type="radio"
+            name="role"
+            value="trekker"
+            checked
+        >
+        <label>Trekker</label>
+    </div>
+
+    <div>
+        <input
+            type="radio"
+            name="role"
+            value="staff"
+        >
+        <label>Staff</label>
+    </div>
+    </div>
+
+    <div class="form-field">
+        <label class="form-label">Password</label>
+        <input
+            type="password"
+            name="password"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="form-field">
+        <label class="form-label">Confirm Password</label>
+        <input
+            type="password"
+            name="confirm_password"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="center">
+        <button
+            type="submit"
+            class="register-btn"
+            style="margin-top: 15px;"
+        >
+            Register
+        </button>
+    </div>
+    <span class="center" style="display: flex; flex-direction: row; gap: 0.5rem; margin-top: 1rem">Already have an account?<a href={{url_for('auth.user_login')}}>Login Here</a></span>
+</div>
+</form>
+</div>
+{% endblock body %}

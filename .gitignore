@@ -1,0 +1,11 @@
+# Python cache
+__pycache__/
+
+# Code Runner File
+tempCodeRunnerFile.py
+
+# Instance folder (Flask runtime files)
+instance/
+
+# Temporary file with SQL Queries to View Data
+temp.py

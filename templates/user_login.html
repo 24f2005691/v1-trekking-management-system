@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %} Login {% endblock title %}
+
+{% block body %}
+
+<div class="form-container center">
+<form action="{{url_for('auth.user_login')}}" method="POST">
+    <div class="form-content">
+        <h1 class="center login-register-heading">Login</h1>
+        <div class="form-field">
+        <label class="form-label">Email Address</label>
+        <input
+            type="email"
+            name="email"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="form-field">
+        <label class="form-label">Password</label>
+        <input
+            type="password"
+            name="password"
+            class="form-control"
+            required
+        >
+    </div>
+
+    <div class="center">
+        <button
+            type="submit"
+            class="register-btn"
+            style="margin-top: 15px;"
+        >
+            Login
+        </button>
+    </div>
+    <span class="center" style="display: flex; flex-direction: row; gap: 0.5rem; margin-top: 1rem">Do not have an account?<a href={{url_for('auth.user_registration')}}>Register Here</a></span>
+</div>
+</form>
+</div>
+{% endblock body %}
