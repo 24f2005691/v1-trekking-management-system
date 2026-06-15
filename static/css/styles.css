@@ -180,5 +180,3 @@ footer{
 .primary-information tr:nth-child(odd){
     background: var(--light-accent);
 }
-.primary-information tr:nth-child(even){
-}
