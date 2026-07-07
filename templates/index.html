@@ -2,6 +2,32 @@
 
 {% block title %} Homepage {% endblock title %}
 
+{% block style %}
+
+{% endblock style %}
+
+{% block search %}
+
+{% endblock search %}
+
+{% block nav %}
+    <div class="dashboard-links">
+    {% if session.get("role")=='admin' %}
+        <a href="{{ url_for('admin.dashboard') }}">
+            Go to Admin Dashboard
+        </a>
+        {% elif session.get("role")=='staff' %}
+        <a href="{{ url_for('staff.dashboard') }}">
+            Go to Staff Dashboard
+        </a>
+        {% elif session.get("role")=='trekker' %}
+        <a href="{{ url_for('user.dashboard', user_id=session['user_id']) }}">
+            Go to the Dashboard
+        </a>
+    {% endif %}
+    </div>
+{% endblock nav %}
+
 {% block body %}
 
 This is the homepage.

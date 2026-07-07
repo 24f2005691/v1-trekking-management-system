@@ -11,6 +11,20 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/user-login", methods=['GET', 'POST'])
 def user_login():
+    if "user_id" in session:
+            flash("You are already logged in.")
+
+            role = session.get("role")
+            
+            if role=="admin":
+                return redirect(url_for('admin.dashboard'))
+            
+            elif role=="staff":
+                return redirect(url_for('staff.dashboard'))
+                
+            else:
+                return redirect(url_for('user.dashboard',  user_id=session['user_id']))
+            
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -25,11 +39,11 @@ def user_login():
             flash("Invalid email or password")
             return redirect(url_for("auth.user_login"))
 
-        if user.role == "staff" and not user.is_approved:
+        if user.role == "staff" and not user.status=="staff_approved":
             flash("Your account is awaiting admin approval.")
             return redirect(url_for("auth.user_login"))
 
-        if user.is_blacklisted:
+        if user.status=="blacklisted":
             flash("Your account has been blacklisted")
             return redirect(url_for("auth.user_login"))
 
@@ -42,11 +56,11 @@ def user_login():
         if user.role == "admin":
             return redirect(url_for("admin.dashboard"))
 
-        elif user.role == "staff" and user.is_approved:
+        elif user.role == "staff" and user.status=="staff_approved":
             return redirect(url_for("staff.dashboard"))
 
         elif user.role == "trekker":
-            return redirect(url_for("user.dashboard"))
+            return redirect(url_for("user.dashboard",  user_id=session['user_id']))
 
     return render_template("user_login.html")
 
@@ -58,6 +72,20 @@ def logout():
 @auth_bp.route("/user-registration", methods=['GET', 'POST'])
 def user_registration():
     
+    if "user_id" in session:
+            flash("You are already logged in.")
+
+            role = session.get("role")
+            
+            if role=="admin":
+                return redirect(url_for('admin.dashboard'))
+            
+            elif role=="staff":
+                return redirect(url_for('staff.dashboard'))
+                
+            else:
+                return redirect(url_for('user.dashboard',  user_id=session['user_id']))
+
     if request.method == "POST":
 
         name = request.form.get("name")
@@ -85,13 +113,16 @@ def user_registration():
             password_hash=generate_password_hash(password),
             phone=phone,
             role=role,
-            is_approved=False,
-            is_blacklisted=False
+            status="staff_pending"
         )
 
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful. Please login.")
-        return redirect(url_for("auth.user_login"))
+        if role == "staff":
+            flash("Staff registration submitted successfully. Please wait for admin approval before logging in.")
+        else:
+            flash("Registration successful. You can now log in.")
+        return redirect(url_for('auth.user_login'))
+    
     return render_template('user_registration.html')

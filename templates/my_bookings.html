@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %} My Bookings {% endblock title %}
+
+{% block style %}
+
+<style>
+    h3{
+        margin-left: 1rem;
+    }
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+    .trek-information th{
+        text-align: left;
+    }
+    .trek-information td:last-child{
+        text-align: right
+    }
+    .trek-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+    .cancel-button{
+        color: var(--secondary) !important;
+        background-color: white;
+        font-weight: 600;
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 10px;
+        transition: all 0.25s ease;
+        border: 1.5px solid var(--secondary);
+        margin: 0.7rem;
+    }
+    .cancel-button:hover{
+        transform: translateY(-2px);
+        background-color: var(--secondary-hover);
+        color: white !important;
+        border: 1.5px solid var(--secondary-hover);
+    }
+</style>
+
+{% endblock style %}
+
+{% block search %}
+{% endblock search %}
+
+{% block body %}
+
+<div class="main-content">
+
+<h3>Welcome
+    <a 
+    href="{{ url_for('user.user_profile', user_id=user.id) }}"
+    class="inline-links"
+    >
+        {{ user.name }}
+    </a>
+</h3>
+
+<div class="treks">
+    <h3 class="trek-information-heading">My Bookings</h3>
+    {% if my_bookings %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Difficulty</th>
+            <th>Booked For</th>
+            <th>Action</th>
+        </tr>
+        {% for booking, trek in my_bookings %}
+        <tr>
+            <th><a
+                href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.duration_days }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ booking.participants }}</td>
+            <td>
+                <form action="{{ url_for('user.cancel_trek_booking', trek_id=trek.id) }}" method="POST">
+                    <button 
+                    type="submit"
+                    class="cancel-button"
+                    >
+                    Cancel Booking
+                    </button>
+                </form>
+            </td>
+        </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Treks Booked
+    </div>
+    {% endif %}
+</div>
+</div>
+
+{% endblock body %}

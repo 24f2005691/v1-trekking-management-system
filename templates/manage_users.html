@@ -2,8 +2,237 @@
 
 {% block title %} Manage Users {% endblock title %}
 
+{% block style %}
+
+<style>
+
+    .user-information{
+        width: 100%;
+    }
+    .user-information th,
+    .user-information td{
+        padding: 1rem;
+    }
+    .user-information th{
+        width: 20%;
+        text-align: left;
+    }
+    .user-information td:first-of-type{
+        width: 20%;
+    }
+    .user-information td:last-of-type{
+        width: 20%;
+        text-align: right
+    }
+    .action-links{
+        padding: 10px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .action-links:hover{
+        color: var(--primary-hover) !important;
+        transform: translateY(-2px);
+    }
+    .user-information-heading{
+        padding: 0 1rem 1rem 1rem;
+        margin-top: 1rem;
+        color: var(--primary);
+    }
+    .user-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+    .total-users{
+        color: var(--primary);
+        margin: 1rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    .back-btn{
+        text-decoration: none;
+        display: inline-block;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 1rem;
+        color: white !important;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: transform 0.25s ease;
+        margin-bottom: 1rem;
+    }
+    .back-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+    .search-results h3{
+        margin-left: 1rem;
+    }
+</style>
+
+{% endblock style %}
+
+{% block search %}
+
+<form
+class="d-flex"
+role="search"
+method="GET"
+action="{{ url_for('admin.manage_users') }}"
+>
+
+<input
+class="form-control me-2"
+type="search"
+name="search"
+placeholder="Search by User ID or Name"
+aria-label="Search Staff"
+value="{{ request.args.get('search', '') }}"
+    >
+    
+    <button class="btn btn-outline-success" type="submit">
+        Search
+    </button>
+    
+</form>
+
+{% endblock search %}
+
 {% block body %}
 
-This is the Manage Users Page.
+<div class="main-content">
+
+{% if search %}
+
+<div class="search-results">
+    <a href="{{ url_for('admin.manage_users') }}" class="back-btn">
+        < Go back
+    </a>
+<h3 class="color-primary search-results-heading">Search Results</h3>
+
+{% if search_results %}
+
+<table class="user-information">
+
+    {% for person in search_results %}
+
+    <tr>
+        <th>
+            <a
+            href="{{ url_for('admin.view_user', user_id=person.id) }}"
+            class="inline-links"
+            >
+            {{ person.name }}
+            </a>
+        </th>
+        <td>{{ person.phone }}</td>
+        <td>
+            {% if person.status=="staff_pending" %}
+            <span class="color-green">Active Trekker</span>
+            {% elif person.status=="blacklisted" %}
+            <span class="color-red">Blacklisted Trekker</span>
+            {% endif %}
+        </td>
+        <td>
+            <a
+            href="{{ url_for('admin.view_user', user_id = person.id) }}"
+            class="action-links"
+            >
+                View User Profile
+            </a>
+        </td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% else %}
+
+<p style="padding-left: 1rem;">No User found.</p>
+
+{% endif %}
+
+</div>
+
+{% else %}
+
+    <div class="total-users">
+        Total Users: {{ total_users }}
+    </div>
+    <div class="active-users">
+        <table>
+            <h3 class="user-information-heading">Active Trekkers:</h3>
+            {% if active_trekkers %}
+            <table class="user-information">
+                {% for person in active_trekkers %}
+                <tr>
+                    <th>
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=person.id) }}"
+                        class="inline-links"
+                        >
+                            {{ person.name }}
+
+                        </a>
+                    </th>
+                    <td>{{ person.phone }}</td>
+                    <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+                    <td>
+                        <a
+                        href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                        class="action-links"
+                        >
+                        View Trekker
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <span class="bold color-orange center">No Active Users</span>
+            {% endif %}
+        </table>
+    </div>
+    <div class="blacklisted-users">
+        <table>
+            <h3 class="user-information-heading">Blacklisted Trekkers:</h3>
+            {% if blacklisted_trekkers %}
+            <table class="user-information">
+                {% for person in blacklisted_trekkers %}
+                <tr>
+                    <th>
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=person.id) }}"
+                        class="inline-links"
+                        >
+                        {{ person.name }}
+                        </a>
+                    </th>
+                    <td>{{ person.phone }}</td>
+                    <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+                    <td>
+                        <a
+                        href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                        class="action-links"
+                        >
+                        View Trekker
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <span class="bold color-orange center">No Blacklisted Users</span>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+{% endif %}
 
 {% endblock body %}

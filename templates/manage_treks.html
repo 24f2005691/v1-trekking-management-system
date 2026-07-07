@@ -2,8 +2,442 @@
 
 {% block title %} Manage Treks {% endblock title %}
 
+{% block search %}
+
+<form
+    class="d-flex"
+    role="search"
+    method="GET"
+    action="{{ url_for('admin.manage_treks') }}"
+    >
+
+    <input
+        class="form-control me-2"
+        type="search"
+        name="search"
+        placeholder="Search by Trek ID or Name"
+        aria-label="Search Treks"
+        value="{{ request.args.get('search', '') }}"
+    >
+
+    <button class="btn btn-outline-success" type="submit">
+        Search
+    </button>
+
+</form>
+
+{% endblock search %}
+
+{% block style %}
+
+<style>
+    .main-content{
+        margin-top: 40px;
+    }
+    .treks-info{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .add-trek-btn{
+        background-color: var(--primary);
+        padding: 0.7rem 1.4rem;
+        border-radius: 2rem;
+        color: white !important;
+        font-weight: 600;
+        display: inline-block;
+        text-decoration: none;
+        margin-right: 1rem;
+        transition: transform 0.25s ease;
+    }
+    .add-trek-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+    .trek-information th{
+        text-align: left;
+    }
+    .trek-information td:last-child{
+        text-align: right
+    }
+    .action-links{
+        padding: 10px;
+        color: var(--trek) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .action-links:hover{
+        color: var(--trek-hover) !important;
+        transform: translateY(-2px);
+    }
+    .trek-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+    .total-treks{
+        margin-left: 1rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+</style>
+
+{% endblock style %}
+
 {% block body %}
 
-This is the Manage Treks Page.
+<div class="main-content">
+
+    {% if search %}
+
+    <a
+        href="{{ url_for('admin.manage_treks') }}"
+        class="back-btn"
+    >
+        &lt; Go back
+    </a>
+
+    <div class="search-results">
+ 
+        <h3 class="trek-information-heading">Search Results</h3>
+    
+        {% if search_results %}
+    
+        <table class="trek-information">
+        
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>Duration</th>
+                <th>Assigned Staff</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        
+            {% for trek in search_results %}
+        
+            <tr>
+                <th>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="inline-links"
+                    >
+                        {{ trek.name }}
+                    </a>
+                </th>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.start_date if trek.start_date else "N/A" }}</td>
+                <td>{{ trek.duration_days }} Day(s)</td>
+            
+                <td>
+                    {% if trek.assigned_staff %}
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name }}
+                        </a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            
+                <td>{{ trek.status.title() }}</td>
+            
+                <td>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="action-links"
+                    >
+                        Manage Trek
+                    </a>
+                </td>
+            </tr>
+        
+            {% endfor %}
+        
+        </table>
+    
+        {% else %}
+    
+        <p class="center color-orange">No trek found.</p>
+    
+        {% endif %}
+    
+    </div>
+    
+</div>
+
+{% else %}
+
+<div class="flex-row treks-info">
+    
+    <span
+        class="total-treks"
+        >
+            Total Treks: {{ total_treks }}
+    </span>
+    
+    <a 
+    href="{{ url_for('admin.add_trek') }}" 
+    class="add-trek-btn"
+    >
+        + Add New Trek
+    </a>
+    
+</div>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Open Treks</h3>
+    {% if open_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Assigned Staff</th>
+            <th>Registered / Capacity</th>
+            <th>Actions</th>
+        </tr>
+        {% for trek in open_treks %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                    {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.duration_days }}</td>
+            <td>
+                {% if trek.assigned_staff_id %}
+                <a
+                href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                class="inline-links"
+                >
+                    {{ trek.assigned_staff.name }}
+                </a>
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+            <td>{{ trek.participant_count }} / {{ trek.available_slots }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.manage_trek', trek_id = trek.id) }}"
+                class="action-links"
+                >
+                Manage Trek
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Open Treks
+    </div>
+    {% endif %}
+</div>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Upcoming Treks</h3>
+    {% if upcoming_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Assigned Staff</th>
+            <th>Capacity</th>
+            <th>Actions</th>
+        </tr>
+        {% for trek in upcoming_treks %}
+        <tr>
+                    <th>
+                        <a
+                        href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.name }}
+                        </a>
+                    </th>
+                    <td>{{ trek.location }}</td>
+                    <td>{{ trek.start_date }}</td>
+                    <td>{{ trek.duration_days }}</td>
+                    <td>
+                        {% if trek.assigned_staff_id %}
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name }}
+                        </a>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ trek.available_slots }}</td>
+                    <td>
+                        <a
+                        href="{{ url_for('admin.manage_trek', trek_id = trek.id) }}"
+                        class="action-links"
+                        >
+                        Manage Trek
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div class="color-orange no-data">
+                No Upcoming Treks
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="treks">
+            <h3 class="trek-information-heading">Closed Treks</h3>
+            {% if closed_treks %}
+            <table class="trek-information">
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Start Date</th>
+                    <th>Duration</th>
+                    <th>Assigned Staff</th>
+                    <th>Total Participants</th>
+                    <th>Actions</th>
+                </tr>
+                {% for trek in closed_treks %}
+                <tr>
+                    <th>
+                        <a
+                        href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                        class="inline-links"
+                        >
+                        {{ trek.name }}
+                    </a>
+                </th>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.start_date }}</td>
+                <td>{{ trek.duration_days }}</td>
+                <td>
+                    {% if trek.assigned_staff_id %}
+                    <a
+                    href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                    class="inline-links"
+                    >
+                        {{ trek.assigned_staff.name }}
+                    </a>
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </td>
+                <td>{{ trek.participant_count }}</td>
+                <td>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id = trek.id) }}"
+                    class="action-links"
+                    >
+                    Manage Trek
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Closed Treks
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="treks">
+        <h3 class="trek-information-heading">Completed Treks</h3>
+        {% if completed_treks %}
+        <table class="trek-information">
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>End Date</th>
+                <th>Participants</th>
+                <th>Assigned Staff</th>
+                <th>Actions</th>
+            </tr>
+            {% for trek in completed_treks %}
+            <tr>
+                <th>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="inline-links"
+                    >
+                    {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.end_date }}</td>
+            <td>{{ trek.participant_count }} / {{ trek.available_slots }}</td>
+            <td>
+                {% if trek.assigned_staff_id %}
+                <a
+                href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                class="inline-links"
+                >
+                    {{ trek.assigned_staff.name }}
+                </a>
+                {% else %}
+                N/A
+                {% endif %}
+            </td>
+            <td>
+                <a
+                href="{{ url_for('admin.manage_trek', trek_id = trek.id) }}"
+                class="action-links"
+                >
+                Manage Trek
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="color-orange no-data">
+        No Completed Treks
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endif %}
 
 {% endblock body %}

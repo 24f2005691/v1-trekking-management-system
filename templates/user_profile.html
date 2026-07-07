@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %} {{user.name}}'s Profile {% endblock title %}
+
+{% block style %}
+
+<style>
+    h2{
+        color: var(--primary);
+    }
+    tr{
+        width: 100%;
+        margin: 2rem;
+    }
+    .profile{
+        margin: 1rem;
+        width: 20%;
+        height: 65%;
+        max-height: 80%;
+    }
+    .profile-icon{
+        max-width: 80%;
+    }
+    .name-role{
+        margin: 0.5rem;
+    }
+    .user-info-actions{
+        margin: 1rem;
+        width: 80%;
+        padding: 2rem;
+    }
+    .info-item{
+        width: 100%;
+        margin: 1rem;
+    }
+    .actions-card{
+        margin-top: 2rem;
+    }
+    .actions-card h2{
+        margin-bottom: 1rem;
+    }
+    .actions-card a{
+        text-decoration: none;
+        margin: 0.3rem;
+        border-radius: 1rem;
+        padding: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    .edit-profile-btn{
+        color: var(--primary) !important;
+        border: 1.5px solid var(--primary);
+    }
+    .edit-profile-btn{
+        transition: transform 0.25s ease;
+    }
+    .edit-profile-btn:hover{
+        transform: translateY(-2px);
+        color: white !important;
+        background-color: var(--primary);
+    }
+</style>
+
+{% endblock style %}
+
+{% block body %}
+
+<div class="main-content">
+    <a
+    href="javascript:history.back()"
+    class="back-btn">
+        &lt; Go Back
+    </a>
+    <div class="profile-card flex-row">
+        <div class="profile light-box-shadow">
+            <div class="center">
+            <img src="{{ url_for('static', filename='images/profile.svg') }}" class="profile-icon">
+        </div>
+        <div class="name-role flex-column">
+            <span style="font-size: 1.5rem;"><strong>{{user.name}}</strong></span>
+            <span style="font-weight: 600;
+            background-color: var(--light-accent);
+            width: fit-content;
+            padding: 5px;
+            font-size: 1rem;
+            "
+            >
+            {{ "Staff" if user.role=="staff" else "Trekker" }}
+        </span>
+        </div> <!-- name-role -->
+    </div> <!-- profile -->
+    <div class="user-info-actions light-box-shadow">
+        <div class="user-info">
+            <h2>Profile Information</h2>
+            <div class="flex-row">
+                <div class="info-item">
+                <div class="flex-column">
+                    <span>Email Address</span>
+                    <span>{{user.email}}</span>
+                </div>
+            </div>
+            <div class="info-item flex-row">
+                <div class="flex-column">
+                    <span>Phone Number</span>
+                    <span>{{user.phone}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Registered On</span>
+                    <span>{{user.created_at.strftime(" %d %B %y ") if user.created_at else "N/A"}}</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Status</span>
+                    <span class="display-block">
+                        {% if user.role=="trekker" %}
+                        {% if user.status=="staff_pending" %}<span class="color-green">Active Trekker</span>
+                        {% elif user.status=="blacklisted" %}<span class="color-red">Blacklisted Trekker</span>
+                        {% endif %}
+                        {% elif user.role=="staff" %}
+                        {% if user.status=="staff_pending" %}<span class="color-orange">Application Pending</span>
+                        {% elif user.status=="staff_approved" %}<span class="color-green">Active Staff</span>
+                        {% elif user.status=="staff_rejected" %}<span class="color-red">Rejected</span>
+                        {% elif user.status=="blacklisted" %}<span class="color-red">Blacklisted Staff</span>
+                        {% endif %}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Blacklisted</span>
+                    <span class="display-block">{{ "Yes" if user.status=="blacklisted" else "No" }}</span>
+                </div>
+            </div>
+        </div>
+    </div> <!-- user-info -->
+        <div class="actions-card">
+            <h2>Actions</h2>
+            <a href="{{ url_for('user.edit_profile', user_id=user.id) }}" class="edit-profile-btn">Edit Profile
+            </a>
+        </div>
+    </div> <!-- user-info-actions -->
+</div> <!-- profile-card -->
+</div> <!-- main-content -->
+
+{% endblock body %}

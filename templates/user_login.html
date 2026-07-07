@@ -1,6 +1,69 @@
 {% extends 'base.html' %}
 
-{% block title %} Login {% endblock title %}
+{% block title %} Login Page {% endblock title %}
+
+{% block style %}
+
+    <style>
+        .login-btn{
+            color: var(--primary) !important;
+            background: transparent;
+            border: 2px solid var(--primary);
+            padding: 0.7rem 1.4rem;
+            border-radius: 0.6rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .login-btn:hover{
+            background: rgba(31, 95, 139, 0.08);
+            transform: translateY(-2px);
+        }
+        .register-btn{
+            background: var(--primary);
+            border: none;
+            color: white !important;
+            padding: 0.7rem 1.4rem;
+            border-radius: 0.6rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .register-btn:hover{
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        .form-container{
+            margin-top: 60px;
+        }
+        .form-content{
+            box-shadow: 0 0 5px var(--text-secondary);
+            width: 100%;
+            width: 500px;
+            padding: 3em;
+            border-radius: 1rem;
+            background: white;
+        }
+        .form-field{
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .login-register-heading{
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 2rem;
+        }
+        .user-type-radio{
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+
+{% endblock style %}
 
 {% block body %}
 
@@ -31,13 +94,13 @@
     <div class="center">
         <button
             type="submit"
-            class="register-btn"
+            class="login-btn"
             style="margin-top: 15px;"
         >
             Login
         </button>
     </div>
-    <span class="center" style="display: flex; flex-direction: row; gap: 0.5rem; margin-top: 1rem">Do not have an account?<a href={{url_for('auth.user_registration')}}>Register Here</a></span>
+    <span class="center" style="display: flex; flex-direction: row; gap: 0.5rem; margin-top: 1rem">Do not have an account?<a href={{ url_for('auth.user_registration') }}>Register Here</a></span>
 </div>
 </form>
 </div>

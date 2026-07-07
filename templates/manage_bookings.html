@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+
+{% block title %} Manage Bookings {% endblock title %}
+
+{% block search %}
+
+<form
+    class="d-flex"
+    role="search"
+    method="GET"
+    action="{{ url_for('admin.manage_bookings') }}"
+    >
+
+    <input
+        class="form-control me-2"
+        type="search"
+        name="search"
+        placeholder="Search by Trek ID or Name"
+        aria-label="Search Treks"
+        value="{{ request.args.get('search', '') }}"
+    >
+
+    <button class="btn btn-outline-success" type="submit">
+        Search
+    </button>
+
+</form>
+
+{% endblock search %}
+
+{% block style %}
+
+<style>
+    .main-content{
+        margin-top: 40px;
+    }
+    .add-trek-btn{
+        background-color: var(--primary);
+        padding: 0.7rem 1.4rem;
+        border-radius: 2rem;
+        color: white !important;
+        font-weight: 600;
+        display: inline-block;
+        text-decoration: none;
+        margin-left: 1rem;
+        transition: transform 0.25s ease;
+    }
+    .add-trek-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+    .trek-information th{
+        text-align: left;
+    }
+    .trek-information td:last-child{
+        text-align: right
+    }
+    .action-links{
+        padding: 10px;
+        color: var(--trek) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .action-links:hover{
+        color: var(--trek-hover) !important;
+        transform: translateY(-2px);
+    }
+    .trek-information-heading{
+        margin-left: 1rem;
+        margin-top: 1rem;
+        color: var(--primary);
+    }
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+    h1{
+        margin-left: 1rem;
+    }
+            
+</style>
+
+{% endblock style %}
+
+{% block body %}
+
+<div class="main-content">
+
+    {% if search %}
+
+    <a
+        href="{{ url_for('admin.manage_treks') }}"
+        class="back-btn"
+    >
+        &lt; Go back
+    </a>
+
+    <div class="search-results">
+ 
+        <h3 class="trek-information-heading">Search Results</h3>
+    
+        {% if search_results %}
+    
+        <table class="trek-information">
+        
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>Duration</th>
+                <th>Assigned Staff</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        
+            {% for trek in search_results %}
+        
+            <tr>
+                <th>{{ trek.name }}</th>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.start_date if trek.start_date else "N/A" }}</td>
+                <td>{{ trek.duration_days }} Day(s)</td>
+            
+                <td>
+                    {% if trek.assigned_staff %}
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name }}
+                        </a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            
+                <td>{{ trek.status.title() }}</td>
+            
+                <td>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="action-links"
+                    >
+                        View Bookings
+                    </a>
+                </td>
+            </tr>
+        
+            {% endfor %}
+        
+        </table>
+    
+        {% else %}
+    
+        <p class="center color-orange">No trek found.</p>
+    
+        {% endif %}
+    
+    </div>
+    
+</div>
+
+{% else %}
+
+<h1>Manage Bookings</h1>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Open Treks</h3>
+    {% if open_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Assigned Staff</th>
+            <th>Registered / Capacity</th>
+            <th>Actions</th>
+        </tr>
+        {% for trek in open_treks %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.duration_days }}</td>
+            <td>
+                {% if trek.assigned_staff %}
+                    <a
+                    href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                    class="inline-links"
+                    >
+                        {{ trek.assigned_staff.name }}
+                    </a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>{{ trek.participant_count }} / {{ trek.available_slots }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.manage_trek_bookings', trek_id = trek.id) }}"
+                class="action-links"
+                >
+                    View Bookings
+                </a>
+            </td>
+        </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Open Treks
+    </div>
+    {% endif %}
+</div>
+
+    <div class="treks">
+        <h3 class="trek-information-heading">Closed Treks</h3>
+        {% if closed_treks %}
+        <table class="trek-information">
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>Duration</th>
+                <th>Assigned Staff</th>
+                <th>Total Participants</th>
+                <th>Actions</th>
+            </tr>
+            {% for trek in closed_treks %}
+            <tr>
+                <th>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="inline-links"
+                    >
+                    {{ trek.name }}
+                    </a>
+                </th>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.start_date }}</td>
+                <td>{{ trek.duration_days }}</td>
+                <td>
+                    {% if trek.assigned_staff %}
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name }}
+                        </a>
+                    {% else %}
+                        N/A
+                    {% endif %}    
+                </td>
+                <td>{{ trek.participant_count }}</td>
+                <td><a
+                    href="{{ url_for('admin.manage_trek_bookings', trek_id = trek.id) }}"
+                    class="action-links"
+                    >
+                    View Bookings
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+    </table>
+    {% else %}
+    <div class="color-orange no-data">
+        No Closed Treks
+    </div>
+    {% endif %}
+</div>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Completed Treks</h3>
+    {% if completed_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>End Date</th>
+            <th>Participants</th>
+            <th>Assigned Staff</th>
+            <th>Actions</th>
+        </tr>
+        {% for trek in completed_treks %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.end_date }}</td>
+            <td>{{ trek.participant_count }} / {{ trek.available_slots }}</td>
+            <td>
+                {% if trek.assigned_staff %}
+                    <a
+                    href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                    class="inline-links"
+                    >
+                        {{ trek.assigned_staff.name }}
+                    </a>
+                {% else %}
+                    N/A
+                {% endif %}    
+            </td>
+            <td>
+                <a
+                href="{{ url_for('admin.manage_trek_booking', trek_id = trek.id) }}"
+                class="action-links"
+                >
+                    View Bookings
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="color-orange no-data">
+        No Completed Treks
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock body %}

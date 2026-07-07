@@ -26,14 +26,17 @@ class Users(db.Model):
         nullable=False
     )
 
-    is_approved = db.Column(
-        db.Boolean,
-        default=False
-    )
-
-    is_blacklisted = db.Column(
-        db.Boolean,
-        default=False
+    status = db.Column(
+        db.Enum(
+            "active",
+            "staff_pending",
+            "staff_approved",
+            "staff_rejected",
+            "blacklisted",
+            name="user_status"
+        ),
+        nullable=False,
+        default="staff_pending"
     )
 
     created_at = db.Column(

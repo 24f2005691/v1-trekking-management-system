@@ -1,3 +1,4 @@
+from datetime import datetime
 from config import db
 
 class Treks(db.Model):
@@ -38,13 +39,13 @@ class Treks(db.Model):
     status = db.Column(
         db.Enum(
             "pending",
-            "approved",
             "open",
             "closed",
             "completed",
             name="trek_status"
         ),
-        nullable=False
+        nullable=False,
+        default="pending"
     )
 
     start_date = db.Column(db.Date)
@@ -66,4 +67,9 @@ class Treks(db.Model):
     "Bookings",
     backref="trek",
     lazy=True
+    )
+
+    created_at = db.Column(
+    db.DateTime,
+    default=datetime.utcnow
     )

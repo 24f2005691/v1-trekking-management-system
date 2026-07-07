@@ -35,3 +35,49 @@ def staff_required(func):
         return func(*args, **kwargs)
     
     return wrapper
+
+def user_required(route_param):
+
+    def decorator(f):
+
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+
+            if "user_id" not in session:
+                flash("Please log in first.")
+                return redirect(url_for("auth.user_login"))
+
+            if session.get("role") != "trekker":
+                flash("Access denied.")
+                return redirect(url_for("auth.user_login"))
+
+            if kwargs.get(route_param) != session["user_id"]:
+                flash("You are not authorized to access this page.")
+                return redirect(
+                    url_for(
+                        "user.user_profile",
+                        user_id=session["user_id"]
+                    )
+                )
+
+            return f(*args, **kwargs)
+
+        return decorated_function
+
+    return decorator
+
+def trekker_required(view_function):
+    @wraps(view_function)
+    def decorated_function(*args, **kwargs):
+
+        if "user_id" not in session:
+            flash("Please log in first.")
+            return redirect(url_for("auth.user_login"))
+
+        if session.get("role") != "trekker":
+            flash("You are not authorized to view this page.")
+            return redirect(url_for("homepage"))
+
+        return view_function(*args, **kwargs)
+
+    return decorated_function

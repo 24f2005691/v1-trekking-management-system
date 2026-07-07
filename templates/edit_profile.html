@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <style>
+        .form-content{
+            box-shadow: 0 0 5px var(--text-secondary);
+            width: 100%;
+            width: 500px;
+            padding: 3em;
+            border-radius: 1rem;
+            background: white;
+        }
+        .form-field{
+            display: flex;
+            flex-direction: column;
+        }
+        .back-btn{
+            text-decoration: none;
+            display: inline-block;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 1rem;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: transform 0.25s ease;
+            margin-bottom: 1rem;
+            margin-left: 1rem;
+        }
+        .back-btn:hover{
+            transform: translateY(-2px);
+            background-color: var(--primary-hover);
+        }
+        .save-changes-btn{
+            background-color: var(--primary);
+            color: white;
+            padding: 0.7rem;
+            border-radius: 10px;
+            border: none;
+            transition: all 0.25s ease;
+        }
+        .save-changes-btn:hover{
+            transform: translateY(-2px);
+            background-color: var(--primary-hover);
+        }
+    </style>
+
+{% endblock style %}
+
+{% block title %}Edit Profile{% endblock title %}
+
+{% block body %}
+<div class="main-content">
+
+<a
+href="javascript:history.back()"
+class="back-btn">
+    &lt; Back to Profile
+</a>
+
+<div class="form-container center">
+    <form action="{{url_for('user.edit_profile', user_id=user.id)}}" method="POST">
+        <div class="form-content">
+            <h1 class="center login-register-heading">Edit Profile</h1>
+            
+            <div class="form-field">
+                <label class="form-label">Full Name</label>
+        <input 
+        type="text"
+        name="name"
+        class="form-control"
+        value="{{ user.name }}"
+            required
+            >
+        </div>
+        
+        <div class="form-field">
+            <label class="form-label">Email Address</label>
+        <input
+        type="email"
+        name="email"
+        class="form-control"
+        value="{{ user.email }}"
+        required
+        >
+    </div>
+    
+    <div class="form-field">
+        <label class="form-label">Phone Number</label>
+        <input
+            type="tel"
+            name="phone"
+            class="form-control"
+            value="{{ user.phone }}"
+            required
+            >
+        </div>
+
+    <div class="center">
+        <button
+        type="submit"
+        class="save-changes-btn"
+        style="margin-top: 15px;"
+        >
+        Save Changes
+    </button>
+</div>
+</div>
+</form>
+</div>
+</div>
+{% endblock body %}

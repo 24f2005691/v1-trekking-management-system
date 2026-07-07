@@ -2,8 +2,363 @@
 
 {% block title %} Manage Staff {% endblock title %}
 
+{% block style %}
+
+<style>
+    .main-content{
+        margin-top: 20px;
+    }
+    .staff-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .staff-information th,
+    .staff-information td{
+        padding: 1rem;
+    }
+    .staff-information th{
+        width: 20%;
+        text-align: left;
+    }
+    .staff-information td:first-of-type{
+        width: 20%;
+    }
+    .staff-information td:last-of-type{
+        width: 20%;
+        text-align: right
+    }
+    .action-links{
+        padding: 10px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .action-links:hover{
+        color: var(--primary-hover) !important;
+        transform: translateY(-2px);
+    }
+    .staff-information-heading{
+        padding: 0 1rem 1rem 1rem;
+        color: var(--primary);
+    }
+    .staff-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+    .active-staff-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .active-staff-information th,
+    .active-staff-information td{
+        padding: 1rem;
+    }
+    .active-staff-information th{
+        width: 20%;
+        text-align: left;
+    }
+    .active-staff-information td:first-of-type{
+        width: 20%;
+    }
+    .active-staff-information td:last-of-type{
+        width: 20%;
+        text-align: right
+    }
+    .active-staff-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    .active-staff-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+    .blacklisted-staff-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .blacklisted-staff-information th,
+    .blacklisted-staff-information td{
+        padding: 1rem;
+    }
+    .blacklisted-staff-information th{
+        width: 20%;
+        text-align: left;
+    }
+    .blacklisted-staff-information td:first-of-type{
+        width: 20%;
+    }
+    .blacklisted-staff-information td:last-of-type{
+        width: 20%;
+        text-align: right
+    }
+    .blacklisted-staff-information-heading{
+        padding: 1rem;
+    }
+    .blacklisted-staff-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+    .rejected-staff-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .rejected-staff-information th,
+    .rejected-staff-information td{
+        padding: 1rem;
+    }
+    .rejected-staff-information th{
+        width: 20%;
+        text-align: left;
+    }
+    .rejected-staff-information td:first-of-type{
+        width: 20%;
+    }
+    .rejected-staff-information td:last-of-type{
+        width: 20%;
+        text-align: right
+    }
+    .rejected-staff-information-heading{
+        padding: 1rem;
+    }
+    .rejected-staff-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+    .search-results-heading{
+        padding: 1rem;
+    }
+    .back-btn{
+        text-decoration: none;
+        display: inline-block;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 1rem;
+        color: white !important;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: transform 0.25s ease;
+        margin-bottom: 1rem;
+        margin-left: 1rem;
+    }
+    .back-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+</style>
+
+{% endblock style %}
+
+{% block search %}
+    
+<form
+    class="d-flex"
+    role="search"
+    method="GET"
+    action="{{ url_for('admin.manage_staff') }}"
+    >
+
+    <input
+        class="form-control me-2"
+        type="search"
+        name="search"
+        placeholder="Search by Staff ID or Name"
+        aria-label="Search Staff"
+        value="{{ request.args.get('search', '') }}"
+    >
+
+    <button class="btn btn-outline-success" type="submit">
+        Search
+    </button>
+
+</form>
+
+{% endblock search %}
+
 {% block body %}
 
-This is the Manage Staff Page.
+<div class="main-content">
+
+{% if search %}
+
+<a
+href="javascript:history.back()"
+class="back-btn">
+    &lt; Go Back
+</a>
+
+<div class="search-results">
+
+    <h3 class="color-primary search-results-heading">Search Results</h3>
+
+    {% if search_results %}
+    
+    <table class="staff-information">
+    
+        {% for person in search_results %}
+    
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.view_user', user_id=person.id)}}"
+                class="inline-links"
+                >
+                    {{ person.name }}
+                </a>
+            </th>
+            <td>{{ person.phone }}</td>
+            <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                class="action-links"
+                >
+                View Staff Profile
+                </a>
+            </td>
+        </tr>
+    
+        {% endfor %}
+    
+    </table>
+    
+    {% else %}
+    
+    <p style="padding-left: 1rem;">No staff found.</p>
+    
+    {% endif %}
+    
+    </div>
+    
+    {% else %}
+    
+    <h3 class="staff-information-heading">Staff Registrations:</h3>
+    {% if pending_staff %}
+    <table class="staff-information">
+        {% for person in pending_staff %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.view_user', user_id=person.id)}}"
+                class="inline-links"
+                >
+                    {{ person.name }}
+                </a>
+            </th>
+            <td>{{ person.phone }}</td>
+            <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                class="action-links"
+                >
+                View Registration
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <span class="bold color-orange center">No Staff Registrations</span>
+    {% endif %}
+    
+    <h3 class="active-staff-information-heading">Active Staff:</h3>
+    {% if active_staff %}
+    <table class="active-staff-information">
+        {% for person in active_staff %}
+        <tr>
+           <th>
+                <a
+                href="{{ url_for('admin.view_user', user_id=person.id)}}"
+                class="inline-links"
+                >
+                    {{ person.name }}
+                </a>
+            </th>
+            <td>{{ person.phone }}</td>
+            <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                class="action-links"
+                >
+                View Staff Profile
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <span class="bold color-orange center">No Active Staff</span>
+    {% endif %}
+    
+    <h3 class="color-red blacklisted-staff-information-heading">Blacklisted Staff:</h3>
+    {% if blacklisted_staff %}
+    <table class="blacklisted-staff-information">
+        {% for person in blacklisted_staff %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.view_user', user_id=person.id)}}"
+                class="inline-links"
+                >
+                    {{ person.name }}
+                </a>
+            </th>
+            <td>{{ person.phone }}</td>
+            <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                class="action-links"
+                >
+                View Staff Profile
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <span class="bold color-orange center">No Blacklisted Staff</span>
+    {% endif %}
+    
+    
+    <h3 class="color-red rejected-staff-information-heading">Rejected Staff:</h3>
+    {% if rejected_staff %}
+    <table class="rejected-staff-information">
+        {% for person in rejected_staff %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('admin.view_user', user_id=person.id)}}"
+                class="inline-links"
+                >
+                    {{ person.name }}
+                </a>
+            </th>
+            <td>{{ person.phone }}</td>
+            <td>Registered On: {{ person.created_at.strftime("%d %B %Y") if person.created_at else "N/A" }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.view_user', user_id = person.id) }}"
+                class="action-links"
+                >
+                View Staff Profile
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <span class="bold color-orange center">No Rejected Staff</span>
+    {% endif %}
+    
+    {% endif %}
+
+</div>
 
 {% endblock body %}

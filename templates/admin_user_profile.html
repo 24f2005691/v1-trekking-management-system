@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %} {{user.name}}'s Profile {% endblock title %}
+
+{% block style %}
+
+<style>
+    h2{
+        color: var(--primary);
+    }
+    tr{
+        width: 100%;
+        margin: 2rem;
+    }
+    .profile{
+        margin: 1rem;
+        width: 20%;
+        height: 65%;
+        max-height: 80%;
+    }
+    .profile-icon{
+        max-width: 80%;
+    }
+    .name-role{
+        margin: 0.5rem;
+    }
+    .user-info-actions{
+        margin: 1rem;
+        width: 80%;
+        padding: 2rem;
+    }
+    .info-item{
+        width: 100%;
+        margin: 1rem;
+    }
+    .actions-card{
+        margin-top: 2rem;
+    }
+    .actions-card h2{
+        margin-bottom: 1rem;
+    }
+    .actions-card a{
+        text-decoration: none;
+        margin: 0.3rem;
+        border-radius: 1rem;
+        padding: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    .approve-btn{
+        color: #22c55e !important;
+        border: 1.5px solid #22c55e;
+    }
+    .reject-btn,
+    .blacklist-btn{
+        color: var(--secondary) !important;
+        border: 1.5px solid var(--secondary);
+    }
+    .approve-btn,
+    .reject-btn,
+    .blacklist-btn{
+        transition: transform 0.25s ease;
+    }
+    .approve-btn:hover,
+    .reject-btn:hover{
+        transform: translateY(-2px);
+    }
+    .blacklist-btn:hover{
+        transform: translateY(-2px);
+        color: white !important;
+        background-color: var(--secondary);
+    }
+    .back-btn{
+        text-decoration: none;
+        display: inline-block;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 1rem;
+        color: white !important;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: transform 0.25s ease;
+        margin-bottom: 1rem;
+        margin-left: 1rem;
+    }
+    .back-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+</style>
+
+{% endblock style %}
+
+{% block body %}
+<div class="main-content">
+
+<a
+href="javascript:history.back()"
+class="back-btn">
+    &lt; Go Back
+</a>
+
+<div class="profile-card flex-row">
+    <div class="profile light-box-shadow">
+        <div class="center">
+            <img src="{{ url_for('static', filename='images/profile.svg') }}" class="profile-icon">
+        </div>
+        <div class="name-role flex-column">
+            <span style="font-size: 1.5rem;"><strong>{{user.name}}</strong></span>
+            <span style="font-weight: 600;
+                        background-color: var(--light-accent);
+                        width: fit-content;
+                        padding: 5px;
+                        font-size: 1rem;
+                        "
+            >
+            {{ "Staff" if user.role=="staff" else "Trekker" }}
+        </span>
+        </div> <!-- name-role -->
+    </div> <!-- profile -->
+    <div class="user-info-actions light-box-shadow">
+        <div class="user-info">
+        <h2>{{ "Staff" if user.role=="staff" else "Trekker" }} Information</h2>
+        <div class="flex-row">
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Email Address</span>
+                    <span>{{user.email}}</span>
+                </div>
+            </div>
+            <div class="info-item flex-row">
+                <div class="flex-column">
+                    <span>Phone Number</span>
+                    <span>{{user.phone}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Registered On</span>
+                    <span>{{user.created_at.strftime(" %d %B %y ") if user.created_at else "N/A"}}</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Status</span>
+                    <span class="display-block">
+                        {% if user.role=="trekker" %}
+                            {% if user.status=="staff_pending" %}<span class="color-green">Active Trekker</span>
+                            {% elif user.status=="blacklisted" %}<span class="color-red">Blacklisted Trekker</span>
+                            {% endif %}
+                            {% elif user.role=="staff" %}
+                            {% if user.status=="staff_pending" %}<span class="color-orange">Application Pending</span>
+                            {% elif user.status=="staff_approved" %}<span class="color-green">Active Staff</span>
+                            {% elif user.status=="staff_rejected" %}<span class="color-red">Rejected</span>
+                            {% elif user.status=="blacklisted" %}<span class="color-red">Blacklisted Staff</span>
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="info-item">
+                <div class="flex-column">
+                    <span>Blacklisted</span>
+                    <span class="display-block">{{ "Yes" if user.status=="blacklisted" else "No" }}</span>
+                </div>
+            </div>
+        </div>
+        </div> <!-- user-info -->
+        {% if user.status!="blacklisted" and user.status!="staff_rejected" %}
+        <div class="actions-card">
+            <h2>Actions</h2>
+            {% if user.role=="staff" and user.status=="staff_pending" %}
+            <a href="{{ url_for('admin.approve_staff', staff_id = user.id ) }}" class="approve-btn">Approve</a>
+            <a href="{{ url_for('admin.reject_staff', staff_id = user.id ) }}" class="reject-btn">Reject</a>
+            {% endif %}
+            {% if user.role == "trekker" and user.status != "blacklisted" %}
+            <a href="{{ url_for('admin.blacklist_user', user_id=user.id) }}" class="blacklist-btn">Blacklist
+            </a>
+            {% elif user.role == "staff" and user.status == "staff_approved" %}
+            <a href="{{ url_for('admin.blacklist_user', user_id=user.id) }}" class="blacklist-btn">Blacklist
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div> <!-- user-info-actions -->
+</div> <!-- profile-card -->
+</div>
+{% endblock body %}

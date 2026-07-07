@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %} User Dashboard {% endblock title %}
+
+{% block style %}
+
+<style>
+    .main-content{
+        margin-left: 1rem;
+    }
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+    .trek-information th{
+        text-align: left;
+    }
+    .trek-information td:last-child{
+        text-align: right
+    }
+    .trek-information td a{
+        padding: 10px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .trek-information td a:hover{
+        transform: translateY(-2px);
+        color: white !important;
+        background-color: var(--primary-hover);
+    }
+    .trek-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+    .cancel-button{
+        color: var(--secondary) !important;
+        background-color: white;
+        font-weight: 600;
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 10px;
+        transition: all 0.25s ease;
+        border: 1.5px solid var(--secondary);
+        margin: 0.7rem;
+    }
+    .cancel-button:hover{
+        transform: translateY(-2px);
+        background-color: var(--secondary-hover);
+        color: white !important;
+        border: 1.5px solid var(--secondary-hover);
+    }
+    .view-trek-link{
+        text-decoration: none;
+        color: var(--primary) !important;
+    }
+    .view-trek-link:hover{
+        color: var(--primary-hover) !important;
+    }
+
+</style>
+
+{% endblock style %}
+
+{% block search %}
+{% endblock search %}
+
+{% block body %}
+
+<div class="main-content">
+
+<h3>Welcome {{ user.name }}</h3>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Available Treks</h3>
+    {% if open_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Difficulty</th>
+            <th>Available Slots</th>
+            <th>Action</th>
+        </tr>
+        {% for trek in open_treks %}
+        <tr>
+            <th>{{ trek.name }}</th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.duration_days }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ trek.available_slots - trek.participant_count }}</td>
+            <td><a href="{{ url_for('user.view_trek', trek_id=trek.id) }}">View Trek</a></td>
+        </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Treks Available
+    </div>
+    {% endif %}
+</div>
+</div>
+
+{% endblock body %}

@@ -1,40 +1,107 @@
 {% extends 'base.html' %}
 
-{% block title %} Dashboard {% endblock title %}
+{% block title %} Admin Dashboard {% endblock title %}
 
-{% block search %}
-    <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
-{% endblock search %}
+{% block style %}
+
+<style>
+    .primary-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    .primary-information th,
+    .primary-information td{
+        padding: 0.8rem;
+    }
+    .primary-information th{
+        width: 35%;
+        text-align: left;
+    }
+    .primary-information td:first-of-type{
+        width: 25%;
+    }
+    .primary-information td:last-of-type{
+        width: 40%;
+        display: flex;
+        float: right;
+    }
+    .primary-information a{
+        padding: 10px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+    .primary-information a:hover{
+        color: var(--primary-hover) !important;
+        transform: translateY(-2px);
+        
+    }
+    .primary-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    .primary-information tr:nth-child(odd){
+        background: var(--light-accent);
+    }
+</style>
+
+{% endblock style %}
 
 {% block body %}
 
 <h2 style="color: var(--primary); padding: 10px">Welcome to the Admin Dashboard.</h2>
 
 <table class="primary-information">
-    <tr colspan="3"><h3 class="primary-information-heading">Primary information:</h3></tr>
+    
     <tr>
-        <th>Total Treks:</th>
-        <td>{{ total_treks }}</td>
-        <td><a href="{{ url_for('admin.manage_treks') }}">Manage Treks</a></td>
+        <h3 class="primary-information-heading">Primary information:</h3></tr>
+        <tr>
+            <th>Total Treks:</th>
+            <td>{{ total_treks }}</td>
+            <td>
+                <a
+                href="{{ url_for('admin.manage_treks') }}"
+                >
+                Manage Treks
+            </a>
+        </td>
     </tr>
     <tr>
         <th>Total Users:</th>
         <td>{{ total_users }}</td>
-        <td><a href="{{ url_for('admin.manage_users') }}">Manage Users</a></td>
-    </tr>
-    <tr>
-        <th>Total staff:</th>
-        <td>{{ total_staff }}</td>
-        <td><a href="{{ url_for('admin.manage_staff') }}">Manage Staff</a></td>
-    </tr>
-    <tr>
-        <th>Total Bookings:</th>
-        <td>{{ total_bookings }}</td>
-        <td><a href="{{ url_for('admin.view_bookings') }}">View Bookings</a></td>
-    </tr>
+        <td>
+            <a
+            href="{{ url_for('admin.manage_users') }}"
+            >
+            Manage Users
+        </a>
+    </td>
+</tr>
+<tr>
+    <th>Total Staff:</th>
+    <td>{{ total_staff }}</td>
+    <td>
+        <a href="{{ url_for('admin.manage_staff') }}"
+        >
+        Manage Staff
+    </a>
+</td>
+</tr>
+<tr>
+    <th>Total Bookings:</th>
+    <td>{{ total_bookings }}</td>
+    <td>
+        <a href="{{ url_for('admin.manage_bookings') }}"
+        >
+        Manage Bookings
+    </a>
+</td>
+</tr>
 </table>
 
 {% endblock body %}

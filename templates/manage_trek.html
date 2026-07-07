@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+
+{% block title %} Manage {{ trek.name }} {% endblock title %}
+
+{% block style %}
+
+<style>
+    .main-content{
+        margin-top: 40px;
+        margin-left: 1rem;
+    }
+    .location img{
+        width: 10px;
+    }
+    .location p{
+        display: inline-block;
+    }
+    .back-btn{
+        text-decoration: none;
+        display: inline-block;
+        background-color: var(--primary);
+        border: none;
+        border-radius: 1rem;
+        color: white !important;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: transform 0.25s ease;
+        margin-bottom: 1rem;
+    }
+    .back-btn:hover{
+        transform: translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+    .trek-details{
+        width: 65%;
+        margin-right: 1rem;
+        height: fit-content;
+    }
+    .assign-staff-actions-and-registrations{
+        width: 35%;
+        gap: 1rem;
+        margin-right: 1rem;
+    }
+    .trek-info-table{
+        width: 100%;
+    }
+    .trek-info-table tr:nth-child(even){
+        background-color: var(--light-accent);
+    }
+    .trek-info-table th,
+    .trek-info-table td{
+        padding: 12px 16px;
+    }
+    .trek-name-status{
+        gap: 1rem;
+        align-items: center;
+    }
+    .action-buttons a{
+        font-weight: 600;
+        display: block;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 10px;
+        transition: transform 0.25s ease;
+        border: 1.5px solid var(--primary);
+        margin: 0.7rem;
+    }
+    .action-buttons a:hover{
+        transform: translateY(-2px);
+    }
+    .edit-trek-btn,
+    .mark-completed-btn,
+    .manage-bookings-btn{
+        background-color: var(--light-accent);
+        color: var(--primary) !important;
+    }
+    .edit-trek-btn:hover,
+    .manage-bookings-btn:hover{
+        background-color: var(--primary);
+        color: white !important;
+    }
+    .open-registrations-btn{
+        background-color: var(--green-light);
+        color: var(--green-strong) !important;
+        border: 1.5px solid var(--green-strong) !important;
+    }
+    .open-registrations-btn:hover{
+        color: white !important;
+        background-color: var(--green-strong);
+    }
+    .delete-trek-btn{
+        background-color: var(--secondary-light);
+        color: var(--secondary) !important;
+        border: 1.5px solid var(--secondary) !important;
+    }
+    .close-registrations-btn,
+    .mark-completed-btn{
+        background-color: var(--orange-light);
+        color: var(--orange-strong) !important;
+        border: 1.5px solid var(--orange-strong) !important;
+    }
+    .close-registrations-btn:hover,
+    .mark-completed-btn:hover{
+        color: white !important;
+        background-color: var(--orange-strong);
+    }
+    .delete-trek-btn:hover{
+        color: white !important;
+        background-color: var(--secondary);
+    }
+    .actions-heading{
+        margin-bottom: 1rem;
+    }
+    .item span{
+        font-size: 2.5rem;
+        font-weight: 600;
+    }
+    .item{
+        text-align: center;
+    }
+    .assign-staff button{
+        margin-top: 1rem;
+    }
+    .manage-bookings{
+        text-decoration: none;
+        display: inline-block;
+        color: white !important;
+        border-radius: 5px;
+        padding: 0.7rem;
+        margin: 1rem;
+        background-color: var(--primary);
+        transition: all 0.25s ease;
+    }
+    .manage-bookings:hover{
+        transform:  translateY(-2px);
+        background-color: var(--primary-hover);
+    }
+</style>
+
+{% endblock style %}
+
+{% block body %}
+
+<div class="main-content">
+    
+<a
+href="javascript:history.back()"
+class="back-btn">
+    &lt; Go Back
+</a>
+
+    <div class="trek-name">
+        
+        <div class="flex-row trek-name-status">
+
+            <h1>{{ trek.name }}</h1>
+
+            <div class="trek-status">
+            {% if trek.status == "pending" %}
+                <span class="color-orange">{{ trek.status }}</span>
+            {% elif trek.status == "open" %}
+                <span class="color-green">{{ trek.status }}</span>
+            {% elif trek.status == "closed" %}
+                <span class="color-red">{{ trek.status }}</span>
+            {% elif trek.status == "completed" %}
+                <span class="color-green">{{ trek.status }}</span>
+            {% endif %}
+            </div> <!-- trek-status -->
+            
+        </div>
+            
+        <div class="location">
+            <img src="{{url_for('static', filename='images/location.svg')}}">
+            <p>{{ trek.location }}</p>
+        </div>
+
+    </div>
+
+    <div class="flex-row">
+    
+        <div class="trek-details light-box-shadow">
+        
+            <h3><span class="bold">&#9432;</span> Trek Details</h3>
+        
+            <table class="trek-info-table">
+                <tr class="info-item">
+                    <th>Name</th>
+                    <td>{{ trek.name }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Location</th>
+                    <td>{{ trek.location }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Description</th>
+                    <td>{{ trek.description }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Difficulty</th>
+                    <td>{{ trek.difficulty }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Duration</th>
+                    <td>{{ trek.duration_days }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Start Date</th>
+                    <td>{{ trek.start_date }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>End Date</th>
+                    <td>{{ trek.end_date }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Assigned Staff</th>
+                    <td>
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name if trek.assigned_staff_id else "N/A"}}</td>
+                        </a>
+                </tr>
+                <tr class="info-item">
+                    <th>Participants</th>
+                    <td>{{ participant_count }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Remaining Slots</th>
+                    <td>{{ remaining_slots }} / {{ trek.available_slots }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Total Slots</th>
+                    <td>{{ trek.available_slots }}</td>
+                </tr>
+                <tr class="info-item">
+                    <th>Status</th>
+                    <td>
+                        {% if trek.status == "pending" %}
+                            <span class="color-orange">Bookings not started</span>
+                        {% elif trek.status == "open" %}
+                            <span class="color-green">Open for bookings</span>
+                        {% elif trek.status == "closed" %}
+                            <span class="color-red">Bookings closed</span>
+                        {% elif trek.status == "completed" %}
+                            <span class="color-green">Completed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="info-item">
+                    <th>Created On</th>
+                    <td>{{ trek.created_at.strftime("%d %B %Y") if trek.created_at else "N/A" }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="assign-staff-actions-and-registrations flex-column">
+        
+            {% if not trek.assigned_staff_id %}
+        
+            <div class="assign-staff light-box-shadow">
+                <h3 class="assign-staff-heading">Assign Staff</h3>
+        
+                <div class="form-field">
+            
+                    <form action="{{ url_for('admin.assign_staff', trek_id=trek.id) }}" method="POST">
+                    <select class="form-control" name="staff_id">
+                        <option value="">
+                            Select Staff
+                        </option>
+                        {% for staff in approved_staff %}
+                        <option
+                            value="{{ staff.id }}"
+                        >
+                            {{ staff.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button 
+                        type="submit"
+                        class="button"
+                        >
+                            Assign Staff
+                        </button>
+                    </form>
+                </div>
+            </div>
+        
+            {% endif %}
+        
+            {% if trek.status!="completed" %}
+        
+            <div class="actions light-box-shadow">
+                
+                <h3 class="actions-heading">Actions</h3>
+                
+                <div class="action-buttons">
+                    <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}" class="edit-trek-btn">Edit Trek</a>
+                    {% if trek.status=="pending" %}
+                    <a href="{{ url_for('admin.open_registrations', trek_id=trek.id) }}" class="open-registrations-btn">Open Registrations</a>
+                    {% elif trek.status=="open" %}
+                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">Manage Bookings</a>
+                    <a href="{{ url_for('admin.close_registrations', trek_id=trek.id) }}" class="close-registrations-btn">Close Registrations</a>
+                    {% elif trek.status=="closed" %}
+                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">Manage Bookings</a>
+                    <a href="{{ url_for('admin.mark_completed', trek_id=trek.id) }}" class="mark-completed-btn">Mark Completed</a>
+                    {% elif trek.status=="completed" %}
+                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">View Bookings</a>
+                    {% endif %}
+                    <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" class="delete-trek-btn">Delete Trek</a>
+                </div>
+
+        </div>
+        
+        {% endif %}
+        
+        <div class="registrations light-box-shadow">
+            
+            <h3>Registrations</h3>
+            
+            <div class="flex-row">
+            
+                <div class="item">
+                    <div>
+                        <span class="total-registrations color-green">{{ cancelled_participants + active_participants }}</span>
+                        <div>
+                            Total Registrations
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="item">
+                    <div>
+                        <span class="cancelled-bookings color-orange">{{ cancelled_participants }}</span>
+                        <div>
+                            Cancelled Participants
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div>
+                        <span class="active_bookings color-primary">{{ active_participants }}</span>
+                        <div>
+                            Total Participants
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}

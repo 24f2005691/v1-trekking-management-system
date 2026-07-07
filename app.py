@@ -26,8 +26,7 @@ with app.app_context():
             password_hash=generate_password_hash("admin123"),
             phone="0000000000",
             role="admin",
-            is_approved=True,
-            is_blacklisted=False
+            status="staff_approved"
         )
 
         db.session.add(admin)
