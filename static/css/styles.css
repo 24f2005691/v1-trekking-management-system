@@ -1,5 +1,19 @@
+/* "Montserrat", sans serif */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
+/* "Archivo Black", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+/* "Bebas Neue", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+/* "Anton", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+/* "Space Grotesk", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+/* "League Spartan", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+/* "Pathway Extreme", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Pathway+Extreme:ital,opsz,wght@0,8..144,100..900;1,8..144,100..900&display=swap');
+/* "Dosis", sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
 :root{
     --primary: #1F5F8B;             /* Trek Blue */
     --primary-hover: #184C70;       /* Deep Blue */
@@ -41,6 +55,7 @@ body{
 
 footer{
     position: fixed;
+    z-index: 1000;
     bottom: 0;
     left: 0;
     width: 100%;

@@ -32,9 +32,35 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
+from sqlalchemy import func
+
 @app.route("/")
 def homepage():
-    return render_template('index.html')
+
+    available_treks = Treks.query.filter_by(
+        status="open"
+    ).count()
+
+    registered_trekkers = Users.query.filter_by(
+        role="trekker"
+    ).count()
+
+    staff_members = Users.query.filter_by(
+        role="staff",
+        status="staff_approved"
+    ).count()
+
+    successful_treks = Treks.query.filter_by(
+        status="completed"
+    ).count()
+
+    return render_template(
+        "index.html",
+        available_treks=available_treks,
+        registered_trekkers=registered_trekkers,
+        staff_members=staff_members,
+        successful_treks=successful_treks
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
