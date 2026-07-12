@@ -59,7 +59,7 @@ class="back-btn">
 </a>
 
 <div class="form-container center">
-    <form action="{{url_for('user.edit_profile', user_id=user.id)}}" method="POST">
+    <form action="{{ url_for(edit_endpoint, user_id=user.id) }}" method="POST">
         <div class="form-content">
             <h1 class="center login-register-heading">Edit Profile</h1>
             
@@ -102,9 +102,9 @@ class="back-btn">
         class="save-changes-btn"
         style="margin-top: 15px;"
         >
-        Save Changes
-    </button>
-</div>
+            Save Changes
+        </button>
+    </div>
 </div>
 </form>
 </div>

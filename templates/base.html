@@ -57,7 +57,7 @@
                             <a class="nav-link" href="{{ url_for('user.dashboard', user_id=session['user_id']) }}">Dashboard</a>
                         {% endif %}
                         {% if session.get("role") == "staff" %}
-                            <a class="nav-link" href="{{ url_for('staff.dashboard')}}">Dashboard</a>
+                            <a class="nav-link" href="{{ url_for('staff.dashboard',  user_id=session['user_id'])}}">Dashboard</a>
                         {% endif %}
                     {% endif %}
 
@@ -72,9 +72,14 @@
                     {% elif session.get("role")=="trekker" %}
                     <a class="nav-link" href="{{ url_for('user.available_treks', user_id=session["user_id"]) }}">Available Treks</a>
                     <a class="nav-link" href="{{ url_for('user.my_bookings', user_id=session["user_id"]) }}">My Bookings</a>
+                    <a class="nav-link" href="{{ url_for('user.trek_history', user_id=session["user_id"]) }}">Trek History</a>
                     <a class="nav-link" href="{{ url_for('user.user_profile', user_id=session["user_id"]) }}">Profile</a>
+                    <!-- staff -->
+                    {% elif session.get("role")=="staff" %}
+                    <a class="nav-link" href="{{ url_for('staff.trek_history', user_id=session["user_id"]) }}">Trek History</a>
+                    <a class="nav-link" href="{{ url_for('staff.user_profile', user_id=session["user_id"]) }}">Profile</a>
                     {% endif %}
-                    
+
                     {% if "user_id" not in session %}
                         <a class="nav-link" href="{{ url_for('auth.user_login') }}">Login</a>
                         <a class="nav-link" href="{{ url_for('auth.user_registration') }}">Register</a>

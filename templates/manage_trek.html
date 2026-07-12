@@ -223,7 +223,7 @@ class="back-btn">
                 </tr>
                 <tr class="info-item">
                     <th>Participants</th>
-                    <td>{{ participant_count }}</td>
+                    <td>{{ active_participants }}</td>
                 </tr>
                 <tr class="info-item">
                     <th>Remaining Slots</th>
@@ -288,32 +288,87 @@ class="back-btn">
         
             {% endif %}
         
-            {% if trek.status!="completed" %}
-        
             <div class="actions light-box-shadow">
                 
                 <h3 class="actions-heading">Actions</h3>
                 
                 <div class="action-buttons">
-                    <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}" class="edit-trek-btn">Edit Trek</a>
+                    
                     {% if trek.status=="pending" %}
-                    <a href="{{ url_for('admin.open_registrations', trek_id=trek.id) }}" class="open-registrations-btn">Open Registrations</a>
+                    
+                    <a
+                    href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}"
+                    class="edit-trek-btn"
+                    >
+                    Edit Trek
+                    </a>
+                    
+                    <a
+                    href="{{ url_for('admin.open_registrations', trek_id=trek.id) }}"
+                    class="open-registrations-btn"
+                    >
+                    Open Registrations
+                    </a>
+                    <a
+                    href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}"
+                    class="delete-trek-btn"
+                    >
+                    Delete Trek
+                    </a>
+                    
                     {% elif trek.status=="open" %}
-                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">Manage Bookings</a>
-                    <a href="{{ url_for('admin.close_registrations', trek_id=trek.id) }}" class="close-registrations-btn">Close Registrations</a>
+                    
+                    <a
+                    href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}"
+                    class="edit-trek-btn"
+                    >
+                    Edit Trek
+                    </a>
+                    
+                    <a
+                    href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}"
+                    class="manage-bookings-btn"
+                    >
+                    Manage Bookings
+                    </a>
+                    
+                    <a
+                    href="{{ url_for('admin.close_registrations', trek_id=trek.id) }}"
+                    class="close-registrations-btn">
+                    Close Registrations
+                    </a>
+                    
                     {% elif trek.status=="closed" %}
-                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">Manage Bookings</a>
-                    <a href="{{ url_for('admin.mark_completed', trek_id=trek.id) }}" class="mark-completed-btn">Mark Completed</a>
+                    
+                    <a
+                    href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}"
+                    class="manage-bookings-btn"
+                    >
+                        View Bookings
+                    </a>
+                    
+                    <a
+                    href="{{ url_for('admin.mark_completed', trek_id=trek.id) }}"
+                    class="mark-completed-btn"
+                    >
+                    Mark Completed
+                    </a>
+                    
                     {% elif trek.status=="completed" %}
-                    <a href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}" class="manage-bookings-btn">View Bookings</a>
+                    
+                    <a
+                    href="{{ url_for('admin.manage_trek_bookings', trek_id=trek.id) }}"
+                    class="manage-bookings-btn"
+                    >
+                    Booking History
+                    </a>
+                    
                     {% endif %}
-                    <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" class="delete-trek-btn">Delete Trek</a>
                 </div>
 
         </div>
         
-        {% endif %}
-        
+        {% if not trek.status=='pending' %}
         <div class="registrations light-box-shadow">
             
             <h3>Registrations</h3>
@@ -341,12 +396,13 @@ class="back-btn">
                     <div>
                         <span class="active_bookings color-primary">{{ active_participants }}</span>
                         <div>
-                            Total Participants
+                            {{ 'Participants' if trek.status=='completed' else 'Active Participants' }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

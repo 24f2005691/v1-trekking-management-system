@@ -5,26 +5,32 @@
 {% block style %}
 
 <style>
+    
     .main-content{
         margin-left: 1rem;
     }
+    
     .trek-information{
         width: 100%;
         margin: 0 auto;
         border-collapse: collapse;
     }
+    
     .trek-information th,
     .trek-information td{
         padding: 1rem;
         width: max-content;
     }
+    
     .trek-information th{
         text-align: left;
     }
+    
     .trek-information td:last-child{
         text-align: right
     }
-    .trek-information td a{
+    
+    .table-action-links{
         padding: 10px;
         color: var(--primary) !important;
         font-weight: 500;
@@ -35,23 +41,28 @@
         display: inline-block;
         transition: all 0.25s ease;
     }
-    .trek-information td a:hover{
+    
+    .table-action-links:hover{
         transform: translateY(-2px);
         color: white !important;
         background-color: var(--primary-hover);
     }
+    
     .trek-information-heading{
         padding: 1rem;
         color: var(--primary);
     }
+    
     .trek-information tr:nth-child(even){
         background: var(--light-accent);
     }
+    
     .no-data{
         text-align: center;
         background-color: white;
         font-weight: 600;
     }
+    
     .cancel-button{
         color: var(--secondary) !important;
         background-color: white;
@@ -64,18 +75,55 @@
         border: 1.5px solid var(--secondary);
         margin: 0.7rem;
     }
+    
     .cancel-button:hover{
         transform: translateY(-2px);
         background-color: var(--secondary-hover);
         color: white !important;
         border: 1.5px solid var(--secondary-hover);
     }
+    
     .view-trek-link{
         text-decoration: none;
         color: var(--primary) !important;
     }
+    
     .view-trek-link:hover{
         color: var(--primary-hover) !important;
+    }
+    
+    .heading-link{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 1rem;
+        justify-content: space-between;
+    }
+    
+    .action-links{
+        display: flex;
+        justify-content: space-between;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 18px;
+        color: white !important;
+        font-weight: 500;
+        border-radius: 15px;
+        background-color: var(--primary);
+        transition: all 0.25s ease;
+    }
+    
+    .action-links:hover{
+        transform: translateY(-2px) ;
+        background-color: var(--primary-hover);
+    }
+
+    .searchbar{
+        gap: 1rem;
+    }
+
+    .top{
+        margin-top: 1rem;
     }
 
 </style>
@@ -83,16 +131,176 @@
 {% endblock style %}
 
 {% block search %}
+
+<form
+    method="GET"
+    action="{{ url_for('user.available_treks', user_id=user.id) }}"
+    class="search-form"
+>
+    <div class="flex-row searchbar">
+    <input
+        type="search"
+        name="search"
+        class="form-control"
+        placeholder="Search Trek by Name"
+        value="{{ request.args.get('search', '') }}"
+    >
+
+    <select
+        name="location"
+        class="form-control"
+    >
+        <option value="">All Locations</option>
+
+        {% for location in locations %}
+        <option
+            value="{{ location }}"
+            {% if request.args.get('location') == location %}selected{% endif %}
+        >
+            {{ location }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <select
+        name="difficulty"
+        class="form-control"
+    >
+        <option value="">All Difficulties</option>
+
+        <option value="easy"
+            {% if request.args.get('difficulty')=="easy" %}selected{% endif %}
+        >
+            Easy
+        </option>
+
+        <option value="moderate"
+            {% if request.args.get('difficulty')=="moderate" %}selected{% endif %}
+        >
+            Moderate
+        </option>
+
+        <option value="hard"
+            {% if request.args.get('difficulty')=="hard" %}selected{% endif %}
+        >
+            Hard
+        </option>
+
+    </select>
+    
+    <button
+        type="submit"
+        class="btn btn-outline-success"
+    >
+    Search
+    </button>
+    
+    </div>
+</form>
+
 {% endblock search %}
 
 {% block body %}
 
+{% if search or location or difficulty %}
+
+    <div class="top">
+
+    <a
+        href="{{ url_for('user.available_treks', user_id=user.id) }}"
+        class="back-btn"
+    >
+        &lt; Go back
+    </a>
+
+    <div class="search-results">
+ 
+        <h3 class="trek-information-heading">Search Results</h3>
+    
+        {% if search_results %}
+    
+        <table class="trek-information">
+        
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>Duration</th>
+                <th>Assigned Staff</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        
+            {% for trek in search_results %}
+        
+            <tr>
+                <th>
+                    <a
+                    href="{{ url_for('admin.manage_trek', trek_id=trek.id) }}"
+                    class="inline-links"
+                    >
+                        {{ trek.name }}
+                    </a>
+                </th>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.start_date if trek.start_date else "N/A" }}</td>
+                <td>{{ trek.duration_days }} Day(s)</td>
+            
+                <td>
+                    {% if trek.assigned_staff %}
+                        <a
+                        href="{{ url_for('admin.view_user', user_id=trek.assigned_staff.id) }}"
+                        class="inline-links"
+                        >
+                            {{ trek.assigned_staff.name }}
+                        </a>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            
+                <td>{{ trek.status.title() }}</td>
+            
+                <td>
+                    <a
+                    href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                    class="table-action-links"
+                    >
+                        View Trek
+                    </a>
+                </td>
+            </tr>
+        
+            {% endfor %}
+        
+        </table>
+    
+        {% else %}
+    
+        <p class="center color-orange">No trek found.</p>
+    
+        {% endif %}
+    
+    </div>
+    
+</div>
+
+</div>
+{% else %}
 <div class="main-content">
 
 <h3>Welcome {{ user.name }}</h3>
 
 <div class="treks">
+    <div class="heading-link">
     <h3 class="trek-information-heading">Available Treks</h3>
+    <a
+    href="{{ url_for('user.my_bookings',user_id=user.id) }}"
+    class="action-links"
+    >
+    View My Bookings
+    </a>
+    </div>
     {% if open_treks %}
     <table class="trek-information">
         <tr>
@@ -101,6 +309,7 @@
             <th>Start Date</th>
             <th>Duration</th>
             <th>Difficulty</th>
+            <th>Status</th>
             <th>Available Slots</th>
             <th>Action</th>
         </tr>
@@ -111,8 +320,26 @@
             <td>{{ trek.start_date }}</td>
             <td>{{ trek.duration_days }}</td>
             <td>{{ trek.difficulty }}</td>
+            <td>
+                {% if trek.status == "pending" %}
+                <span class="color-orange">Bookings not started</span>
+                {% elif trek.status == "open" %}
+                <span class="color-green">Open for bookings</span>
+                {% elif trek.status == "closed" %}
+                <span class="color-red">Bookings closed</span>
+                {% elif trek.status == "completed" %}
+                <span class="color-green">Trek Completed</span>
+                {% endif %}
+            </td>
             <td>{{ trek.available_slots - trek.participant_count }}</td>
-            <td><a href="{{ url_for('user.view_trek', trek_id=trek.id) }}">View Trek</a></td>
+            <td>
+                <a
+                href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                class="table-action-links"
+                >
+                View Trek
+                </a>
+            </td>
         </tr>
             {% endfor %}
         </table>
@@ -123,5 +350,6 @@
     {% endif %}
 </div>
 </div>
+{% endif %}
 
 {% endblock body %}

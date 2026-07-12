@@ -5,37 +5,46 @@
 {% block style %}
 
 <style>
+
     h3{
         margin-left: 1rem;
     }
+
     .trek-information{
         width: 100%;
         margin: 0 auto;
         border-collapse: collapse;
     }
+
     .trek-information th,
     .trek-information td{
         padding: 1rem;
         width: max-content;
     }
+
     .trek-information th{
         text-align: left;
     }
+
     .trek-information td:last-child{
         text-align: right
     }
+
     .trek-information-heading{
         padding: 1rem;
         color: var(--primary);
     }
+
     .trek-information tr:nth-child(even){
         background: var(--light-accent);
     }
+
     .no-data{
         text-align: center;
         background-color: white;
         font-weight: 600;
     }
+
     .cancel-button{
         color: var(--secondary) !important;
         background-color: white;
@@ -48,12 +57,56 @@
         border: 1.5px solid var(--secondary);
         margin: 0.7rem;
     }
+    
     .cancel-button:hover{
         transform: translateY(-2px);
         background-color: var(--secondary-hover);
         color: white !important;
         border: 1.5px solid var(--secondary-hover);
     }
+
+    .heading-link{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 1rem;
+        justify-content: space-between;
+    }
+    
+    .action-links{
+        display: flex;
+        justify-content: space-between;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 18px;
+        color: white !important;
+        font-weight: 500;
+        border-radius: 15px;
+        background-color: var(--primary);
+        transition: all 0.25s ease;
+    }
+    
+    .action-links:hover{
+        transform: translateY(-2px) ;
+        background-color: var(--primary-hover);
+    }
+    
+    .table-action-links{
+        padding: 10px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    .table-action-links:hover{
+        color: var(--primary-hover) !important;
+        transform: translateY(-2px);
+    }
+
 </style>
 
 {% endblock style %}
@@ -75,7 +128,15 @@
 </h3>
 
 <div class="treks">
+    <div class="heading-link">
     <h3 class="trek-information-heading">My Bookings</h3>
+    <a
+    href="{{ url_for('user.available_treks', user_id=user.id) }}"
+    class="action-links"
+    >
+    Book More
+    </a>
+    </div>
     {% if my_bookings %}
     <table class="trek-information">
         <tr>
@@ -83,7 +144,7 @@
             <th>Location</th>
             <th>Start Date</th>
             <th>Duration</th>
-            <th>Difficulty</th>
+            <th>Status</th>
             <th>Booked For</th>
             <th>Action</th>
         </tr>
@@ -99,8 +160,19 @@
             <td>{{ trek.location }}</td>
             <td>{{ trek.start_date }}</td>
             <td>{{ trek.duration_days }}</td>
-            <td>{{ trek.difficulty }}</td>
+            <td>
+                {% if trek.status == "pending" %}
+                <span class="color-orange">Bookings not started</span>
+                {% elif trek.status == "open" %}
+                <span class="color-green">Open for bookings</span>
+                {% elif trek.status == "closed" %}
+                <span class="color-red">Bookings closed</span>
+                {% elif trek.status == "completed" %}
+                <span class="color-green">Trek Completed</span>
+                {% endif %}
+            </td>
             <td>{{ booking.participants }}</td>
+            {% if trek.status=='open' %}
             <td>
                 <form action="{{ url_for('user.cancel_trek_booking', trek_id=trek.id) }}" method="POST">
                     <button 
@@ -111,6 +183,16 @@
                     </button>
                 </form>
             </td>
+            {% else %}
+            <td>
+                <a
+                href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                class="table-action-links"                
+                >
+                View Trek
+                </a>
+            </td>
+            {% endif %}
         </tr>
             {% endfor %}
         </table>

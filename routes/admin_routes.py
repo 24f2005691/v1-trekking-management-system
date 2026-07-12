@@ -446,15 +446,6 @@ def manage_trek(trek_id):
 
         return redirect(url_for("admin.manage_trek", trek_id=trek.id))
 
-    participant_count = db.session.query(
-        func.sum(Bookings.participants)
-    ).filter(
-        Bookings.trek_id == trek.id,
-        Bookings.status != "cancelled"
-    ).scalar()
-
-    participant_count = participant_count or 0
-
     cancelled_participants = db.session.query(
         func.sum(Bookings.participants)
     ).filter(
@@ -462,12 +453,15 @@ def manage_trek(trek_id):
         Bookings.status == "cancelled"
     ).scalar() or 0
 
-    active_participants = db.session.query(
-        func.sum(Bookings.participants)
-    ).filter(
-        Bookings.trek_id == trek.id,
-        Bookings.status == "booked"
-    ).scalar() or 0
+    active_participants = (
+        db.session.query(func.sum(Bookings.participants))
+        .filter(
+            Bookings.trek_id == trek.id,
+            Bookings.status.in_(["booked", "completed"])
+        )
+        .scalar()
+        or 0
+    )
 
     approved_staff = Users.query.filter(
         Users.role == "staff",
@@ -480,6 +474,9 @@ def manage_trek(trek_id):
 
     if trek.assigned_staff_id:
         assigned_staff = Users.query.get(trek.assigned_staff_id)
+
+    participant_count = active_participants + cancelled_participants
+    participant_count = participant_count or 0
 
     return render_template(
         'manage_trek.html',
@@ -553,31 +550,40 @@ def close_registrations(trek_id):
         )
     )
 
-@admin_bp.route('/mark-completed/<int:trek_id>')
+@admin_bp.route("/mark-completed/<int:trek_id>")
 @admin_required
 def mark_completed(trek_id):
+
     trek = Treks.query.get_or_404(trek_id)
 
-    if trek.status != "closed":
+    if trek.status == "completed":
+        flash("This trek has already been marked as completed.")
+        return redirect(
+            url_for("admin.manage_trek", trek_id=trek.id)
+        )
 
+    if trek.status != "closed":
         flash("Only closed treks can be marked as completed.")
         return redirect(
-            url_for(
-                'admin.manage_trek',
-                trek_id=trek.id
-            )
+            url_for("admin.manage_trek", trek_id=trek.id)
         )
 
     trek.status = "completed"
+
+    Bookings.query.filter_by(
+        trek_id=trek.id,
+        status="booked"
+    ).update(
+        {"status": "completed"},
+        synchronize_session=False
+    )
+
     db.session.commit()
 
-    flash("Trek marked as completed.")
+    flash("Trek marked as completed successfully.")
 
     return redirect(
-        url_for(
-            'admin.manage_trek',
-            trek_id=trek.id
-        )
+        url_for("admin.manage_trek", trek_id=trek.id)
     )
 
 @admin_bp.route('/delete-trek/<int:trek_id>')
@@ -857,7 +863,7 @@ def manage_trek_bookings(trek_id):
         .join(Users, Bookings.user_id == Users.id)
         .filter(
             Bookings.trek_id == trek_id,
-            Bookings.status == "booked"
+            Bookings.status.in_(["booked", "completed"])
         )
         .order_by(Bookings.booking_date.desc())
         .all()
@@ -878,10 +884,14 @@ def manage_trek_bookings(trek_id):
         trek_id=trek_id
     ).count()
 
-    active_booking_count = Bookings.query.filter_by(
-        trek_id=trek_id,
-        status="booked"
-    ).count()
+    active_booking_count = (
+        Bookings.query
+        .filter(
+            Bookings.trek_id == trek_id,
+            Bookings.status.in_(["booked", "completed"])
+        )
+        .count()
+    )
 
     cancelled_booking_count = Bookings.query.filter_by(
         trek_id=trek_id,
@@ -892,9 +902,10 @@ def manage_trek_bookings(trek_id):
         db.session.query(func.sum(Bookings.participants))
         .filter(
             Bookings.trek_id == trek_id,
-            Bookings.status == "booked"
+            Bookings.status.in_(["booked", "completed"])
         )
-        .scalar() or 0
+        .scalar()
+        or 0
     )
 
     remaining_slots = trek.available_slots - total_participants
@@ -916,6 +927,17 @@ def manage_trek_bookings(trek_id):
 def cancel_booking(booking_id):
 
     booking = Bookings.query.get_or_404(booking_id)
+
+    trek = Treks.query.get_or_404(booking.trek_id)
+
+    if trek.status == "completed":
+        flash("Bookings cannot be modified after the trek has been completed.")
+        return redirect(
+            url_for(
+                "admin.manage_trek_bookings",
+                trek_id=trek.id
+            )
+        )
 
     if booking.status == "cancelled":
         flash("This booking has already been cancelled.")

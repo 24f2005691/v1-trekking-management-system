@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block title %} Bookings for {{ trek.name }} {% endblock title %}
+
+{% block style %}
+
+<style>
+    
+    .main-content{
+        margin-top: 40px;
+    }
+
+    .booking-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+
+    .booking-information th,
+    .booking-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+
+    .booking-information th{
+        text-align: left;
+    }
+
+    .booking-information td:last-child{
+        text-align: right;
+    }
+
+    .action-links{
+        padding: 10px;
+        color: var(--trek) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+
+    .action-links:hover{
+        color: var(--primary-hover) !important;
+        transform: translateY(-2px);
+    }
+
+    .cancel-booking-btn{
+        padding: 10px;
+        color: var(--secondary) !important;
+        font-weight: 500;
+        margin-right: 1rem;
+        background-color: white;
+        border: 1.5px solid var(--secondary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    
+    .cancel-booking-btn:hover{
+        color: var(--secondary) !important;
+        transform: translateY(-2px);
+    }
+    
+    .booking-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    
+    .booking-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+    
+    .links{
+        text-decoration: none;
+        color: var(--primary) !important;
+    }
+    
+    .links:hover{
+        color: var(--primary-hover) !important;
+    }
+    
+    .booking-summary{
+        display: flex;
+        gap: 1rem;
+        margin: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .summary-card{
+        flex: 1;
+        min-width: 170px;
+        background: white;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .summary-value{
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .summary-label{
+        display: block;
+        margin-top: .4rem;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .booking-information th,
+    .booking-information td{
+        text-align: center;
+    }
+    
+    .manage-trek-link{
+        text-decoration: none;
+        display: inline-block;
+        margin: 1rem;
+        margin-left: auto;
+        padding: 0.6rem 1.2rem;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        background-color: white;
+        color: var(--primary) !important;
+        border: 1.5px solid var(--primary);
+        transition: all 0.25s ease;
+    }
+    
+    .manage-trek-link:hover{
+        transform: translateY(-2px);
+        color: var(--primary-hover) !important;
+        border: 1.5px solid var(--primary-hover);
+    }
+    
+    .bookings-heading{
+        margin-left: 1rem;
+    }
+
+    .trek-name-status{
+        gap: 1rem;
+        align-items: center;
+    }
+
+</style>
+
+{% endblock style %}
+
+{% block body %}
+
+<div class="main-content">
+
+<a
+href="javascript:history.back()"
+class="back-btn">
+    &lt; Go Back
+</a>
+
+<div class="flex-row" style="align-items: center;">
+
+    <div class="trek-name-status flex-row">
+
+    <h1 class="bookings-heading"> Bookings for 
+        <a
+        href="{{ url_for('staff.manage_trek', trek_id=trek.id) }}"
+        class="inline-links"
+        >
+        {{trek.name }}
+        </a>    
+    </h1>
+
+    <div class="trek-status">
+        {% if trek.status == "pending" %}
+        <span class="color-orange">{{ trek.status }}</span>
+        {% elif trek.status == "open" %}
+        <span class="color-green">{{ trek.status }}</span>
+        {% elif trek.status == "closed" %}
+        <span class="color-red">{{ trek.status }}</span>
+        {% elif trek.status == "completed" %}
+        <span class="color-green">{{ trek.status }}</span>
+        {% endif %}
+    </div> <!-- trek-status -->
+
+    </div>
+
+
+    <a
+    href="{{ url_for('staff.manage_trek', trek_id=trek.id)}}"
+    class="manage-trek-link"
+    >
+    View Trek
+    </a>
+    
+</div>
+
+<div class="booking-summary">
+
+    <div class="summary-card">
+        <span class="summary-value">{{ total_bookings }}</span>
+        <span class="summary-label">Total Bookings</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ active_booking_count }}</span>
+        <span class="summary-label">Active Bookings</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ cancelled_booking_count }}</span>
+        <span class="summary-label">Cancelled Bookings</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ total_participants }}</span>
+        <span class="summary-label">Registered Participants</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ remaining_slots }}</span>
+        <span class="summary-label">
+            {{ 'Empty Slots' if trek.status=='completed' else 'Remaining Slots'  }}
+        </span>
+    </div>
+
+</div>
+
+<div class="bookings">
+    
+    <h3 class="booking-information-heading">
+        {% if trek.status=="open" %}
+        Active Bookings
+        {% elif trek.status=="closed" %}
+        Confirmed Bookings
+        {% elif trek.status=="completed" %}
+        Bookings History
+        {% endif %}
+    </h3>
+    
+    {% if active_bookings %}
+
+    <table class="booking-information">
+        <tr>
+            <th>User Name</th>
+            <th>Phone</th>
+            <th>Participants</th>
+            <th>Booking Date</th>
+        </tr>
+        {% for booking, user in active_bookings %}
+        <tr>
+            <th>{{ user.name }}</th>
+            <th>{{ user.phone }}</th>
+            <td>{{ booking.participants }}</td>
+            <td>{{ booking.booking_date.strftime("%d %B %Y") }}</td>
+        </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            {{ 'No Bookings' if trek.status=='completed' else 'No Active Bookings' }}            
+    </div>
+    {% endif %}
+</div>
+
+    <div class="bookings">
+        <h3 class="booking-information-heading">
+            Cancelled Bookings
+        </h3>
+        {% if cancelled_bookings %}
+        <table class="booking-information">
+            <tr>
+                <th>User Name</th>
+                <th>Phone</th>
+                <th>Participants</th>
+                <th>Booking Date</th>
+            </tr>
+            {% for booking, user in cancelled_bookings %}
+            <tr>
+                <th>{{ user.name }}</th>
+                <th>{{ user.phone }}</th>
+                <td>{{ booking.participants }}</td>
+                <td>{{ booking.booking_date.strftime("%d %B %Y") }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Cancelled Bookings
+        </div>
+        {% endif %}
+    </div>
+    
+</div>
+
+{% endblock body %}

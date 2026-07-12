@@ -20,7 +20,7 @@ def user_login():
                 return redirect(url_for('admin.dashboard'))
             
             elif role=="staff":
-                return redirect(url_for('staff.dashboard'))
+                return redirect(url_for('staff.dashboard', user_id=session['user_id']))
                 
             else:
                 return redirect(url_for('user.dashboard',  user_id=session['user_id']))
@@ -57,7 +57,7 @@ def user_login():
             return redirect(url_for("admin.dashboard"))
 
         elif user.role == "staff" and user.status=="staff_approved":
-            return redirect(url_for("staff.dashboard"))
+            return redirect(url_for("staff.dashboard", user_id=session['user_id']))
 
         elif user.role == "trekker":
             return redirect(url_for("user.dashboard",  user_id=session['user_id']))
@@ -81,7 +81,7 @@ def user_registration():
                 return redirect(url_for('admin.dashboard'))
             
             elif role=="staff":
-                return redirect(url_for('staff.dashboard'))
+                return redirect(url_for('staff.dashboard',  user_id=session['user_id']))
                 
             else:
                 return redirect(url_for('user.dashboard',  user_id=session['user_id']))

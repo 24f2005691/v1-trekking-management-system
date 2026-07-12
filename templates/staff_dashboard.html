@@ -2,8 +2,211 @@
 
 {% block title %} Staff Dashboard {% endblock title %}
 
+{% block style %}
+
+<style>
+
+    .main-content{
+        margin-left: 1rem;
+    }
+
+    .assigned-treks{
+        font-weight: 600;
+        font-size: 1.6rem;
+    }
+
+    .booking-summary{
+        display: flex;
+        gap: 1rem;
+        margin: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .summary-card{
+        flex: 1;
+        min-width: 170px;
+        background: white;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .summary-value{
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .summary-label{
+        display: block;
+        margin-top: .4rem;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+    
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+    
+    .trek-information th{
+        text-align: left;
+    }
+    
+    .trek-information td:last-child{
+        text-align: right
+    }
+    
+    .action-links{
+        padding: 10px;
+        color: var(--trek) !important;
+        font-weight: 500;
+        background-color: white;
+        border: 1.5px solid var(--primary);
+        border-radius: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.25s ease;
+    }
+    
+    .action-links:hover{
+        color: var(--trek-hover) !important;
+        transform: translateY(-2px);
+    }
+    
+    .trek-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+    
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+    
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+
+</style>
+
+{% endblock style %}
+
+{% block search %}
+
+{% endblock search %}
+
+{% block nav %}
+    
+{% endblock nav %}
+
 {% block body %}
 
-This is the staff dashboard.
+<div class="main-content">
+
+    <h1>Welcome, 
+        <a
+        href="{{ url_for('staff.user_profile', user_id=user.id) }}"
+        class="inline-links"
+        >
+        {{user.name}}
+        </a>
+    </h1>
+    <div>
+        <span class="assigned-treks">Assigned Treks: </span>
+        <span class="color-orange assigned-treks">3</span>
+    </div>
+
+    <div class="booking-summary">
+
+    <div class="summary-card">
+        <span class="summary-value">{{ upcoming_count}}</span>
+        <span class="summary-label color-text-primary">Upcoming Treks</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value color-orange">{{ active_count }}</span>
+        <span class="summary-label color-text-primary">Active Treks</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value color-green">{{ completed_count }}</span>
+        <span class="summary-label color-text-primary">Completed Treks</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ participant_count }}</span>
+        <span class="summary-label color-text-primary">Participants</span>
+    </div>
+
+</div>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Assigned Treks</h3>
+    {% if assigned_treks %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th>Registered / Capacity</th>
+            <th>Actions</th>
+        </tr>
+        {% for trek in assigned_treks %}
+        <tr>
+            <th>
+                <a
+                href="{{ url_for('staff.manage_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                    {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{trek.duration_days }}</td>
+            <td>
+                {% if trek.status == "pending" %}
+                <span class="color-orange">Bookings not started</span>
+                {% elif trek.status == "open" %}
+                <span class="color-green">Open for bookings</span>
+                {% elif trek.status == "closed" %}
+                <span class="color-red">Bookings closed</span>
+                {% elif trek.status == "completed" %}
+                <span class="color-green">Completed</span>
+                {% endif %}
+            </td>
+            <td>{{ trek.participant_count }} / {{ trek.available_slots }}</td>
+            <td>
+                <a
+                href="{{ url_for('staff.manage_trek', trek_id = trek.id) }}"
+                class="action-links"
+                >
+                Manage 
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Assigned Treks
+    </div>
+    {% endif %}
+</div>
+
+</div>
 
 {% endblock body %}

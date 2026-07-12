@@ -209,6 +209,7 @@
 
     </div>
     <div class="actions-and-registrations flex-column">
+        {% if not trek.status=='completed' and not trek.status=='closed' %}
         <div class="actions light-box-shadow">
             <h3 class="actions-heading">Actions</h3>
             <div class="action-buttons">
@@ -247,6 +248,9 @@
         {% endif %}
         </div>
         </div>
+        {% endif%}
+
+
         <div class="registrations light-box-shadow">
             <h3>Registrations</h3>
             <div class="flex-row">

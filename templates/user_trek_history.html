@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %} Trek History {% endblock title %}
+
+{% block style %}
+
+<style>
+
+    .trek-information{
+        width: 100%;
+        margin: 0 auto;
+        border-collapse: collapse;
+    }
+
+    .trek-information th,
+    .trek-information td{
+        padding: 1rem;
+        width: max-content;
+    }
+
+    .trek-information th{
+        text-align: left;
+    }
+
+    .trek-information td:last-child{
+        text-align: right
+    }
+
+    .trek-information-heading{
+        padding: 1rem;
+        color: var(--primary);
+    }
+
+    .trek-information tr:nth-child(even){
+        background: var(--light-accent);
+    }
+
+    .no-data{
+        text-align: center;
+        background-color: white;
+        font-weight: 600;
+    }
+
+    .action-links{
+        display: inline-block;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 18px;
+        color: var(--primary) !important;
+        font-weight: 500;
+        border: 1.5px solid var(--primary);
+        border-radius: 15px;
+        transition: all 0.25s ease;
+    }
+    
+    .action-links:hover{
+        transform: translateY(-2px);
+        color: var(--primary-hover) !important;
+        border: 1.5px solid var(--primary);
+    }
+
+    .booking-summary{
+        display: flex;
+        gap: 1rem;
+        margin: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .summary-card{
+        flex: 1;
+        min-width: 170px;
+        background: white;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .summary-value{
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .summary-card:last-child a{
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .summary-label{
+        display: block;
+        margin-top: .4rem;
+        color: #666;
+        font-weight: 500;
+    }
+  
+
+</style>
+
+{% endblock style %}
+
+{% block search %}
+
+{% endblock search %}
+
+{% block body %}
+
+<div class="main-content">
+
+    <div class="booking-summary">
+
+    <div class="summary-card">
+        <span class="summary-value">{{ completed_treks_count }}</span>
+        <span class="summary-label color-text-primary">Completed Treks</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value color-orange">{{ total_trek_days }}</span>
+        <span class="summary-label color-text-primary">Total Trek Days</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value color-green">{{ total_seats_booked }}</span>
+        <span class="summary-label color-text-primary">Total Seats Booked</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">
+            <a
+            href="{{ url_for('staff.manage_trek', trek_id = latest_trek.id) }}"
+            class="inline-links"
+            >
+                {{ latest_trek.name }}
+            </a>
+        </span>
+        <span class="summary-label color-text-primary">Latest Trek</span>
+    </div>
+
+    </div>
+
+<div class="treks">
+    <h3 class="trek-information-heading">Completed Treks</h3>
+    {% if completed_bookings %}
+    <table class="trek-information">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Duration</th>
+            <th>Booked For</th>
+            <th>Action</th>
+        </tr>
+        {% for booking, trek in completed_bookings %}
+        <tr>
+            <th><a
+                href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                class="inline-links"
+                >
+                {{ trek.name }}
+                </a>
+            </th>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.start_date }}</td>
+            <td>{{ trek.end_date }}</td>
+            <td>{{ trek.duration_days }}</td>
+            <td>{{ booking.participants }}</td>
+            <td>
+                <a
+                href="{{ url_for('user.view_trek', trek_id=trek.id)}}"
+                class="action-links"
+                >
+                    View Trek
+                </a>
+            </td>
+        </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="color-orange no-data">
+            No Treks Booked
+        </div>
+    {% endif %}
+</div>
+</div>
+
+{% endblock body %}

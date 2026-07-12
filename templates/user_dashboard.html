@@ -5,25 +5,31 @@
 {% block style %}
 
 <style>
+
     .treks h3, h3{
         margin-left: 1rem;
     }
+
     .trek-information{
         width: 100%;
         margin: 0 auto;
         border-collapse: collapse;
     }
+
     .trek-information th,
     .trek-information td{
         padding: 1rem;
         width: max-content;
     }
+
     .trek-information th{
         text-align: left;
     }
+
     .trek-information td:last-child{
         text-align: right
     }
+
     .trek-information td a{
         padding: 10px;
         color: var(--primary) !important;
@@ -35,23 +41,28 @@
         display: inline-block;
         transition: all 0.25s ease;
     }
+
     .trek-information td a:hover{
         transform: translateY(-2px);
         color: white !important;
         background-color: var(--primary-hover);
     }
+
     .trek-information-heading{
         padding: 1rem;
         color: var(--primary);
     }
+
     .trek-information tr:nth-child(even){
         background: var(--light-accent);
     }
+
     .no-data{
         text-align: center;
         background-color: white;
         font-weight: 600;
     }
+
     .cancel-button{
         color: var(--secondary) !important;
         background-color: white;
@@ -64,20 +75,80 @@
         border: 1.5px solid var(--secondary);
         margin: 0.7rem;
     }
+
     .cancel-button:hover{
         transform: translateY(-2px);
         background-color: var(--secondary-hover);
         color: white !important;
         border: 1.5px solid var(--secondary-hover);
     }
+
     .view-trek-link{
         text-decoration: none;
         color: var(--primary) !important;
     }
+
     .view-trek-link:hover{
         color: var(--primary-hover) !important;
     }
 
+    .heading-link{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-right: 1rem;
+        justify-content: space-between;
+    }
+    
+    .action-links{
+        display: flex;
+        justify-content: space-between;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 18px;
+        color: white !important;
+        font-weight: 500;
+        border-radius: 15px;
+        background-color: var(--primary);
+        transition: all 0.25s ease;
+    }
+    
+    .action-links:hover{
+        transform: translateY(-2px) ;
+        background-color: var(--primary-hover);
+    }
+    
+    .booking-summary{
+        display: flex;
+        gap: 1rem;
+        margin: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .summary-card{
+        flex: 1;
+        min-width: 170px;
+        background: white;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+    .summary-value{
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .summary-label{
+        display: block;
+        margin-top: .4rem;
+        color: #666;
+        font-weight: 500;
+    }
+    
 </style>
 
 {% endblock style %}
@@ -91,8 +162,52 @@
 
 <h3>Welcome {{ user.name }}</h3>
 
+<div class="booking-summary">
+
+    <div class="summary-card">
+        <span class="summary-value">{{ available_treks_count if available_treks_count else '-'}}</span>
+        <span class="summary-label">Available Treks</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">
+            <a
+            href="{{ url_for('user.view_trek', trek_id=upcoming_trek.id) }}"
+            class="inline-links"
+            >
+                {{ upcoming_trek.name if upcoming_trek else '-'}}
+            </a>
+        </span>
+        <span class="summary-label">Upcoming Trek</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ completed_treks_count }}</span>
+        <span class="summary-label">Completed Treks</span>
+    </div>
+    
+    <div class="summary-card">
+        <span class="summary-value">{{ my_active_bookings_count }}</span>
+        <span class="summary-label">Active Bookings</span>
+    </div>
+
+    <div class="summary-card">
+        <span class="summary-value">{{ total_trek_days }}</span>
+        <span class="summary-label">Total Trek Days</span>
+    </div>
+
+</div>
+
 <div class="treks">
+    <div class="heading-link">
     <h3 class="trek-information-heading">Available Treks</h3>
+    <a
+    href="{{ url_for('user.available_treks', user_id=user.id) }}"
+    class="action-links"
+    >
+    View Available Treks
+    </a>
+    </div>
     {% if open_treks %}
     <table class="trek-information">
         <tr>
@@ -101,6 +216,7 @@
             <th>Start Date</th>
             <th>Duration</th>
             <th>Difficulty</th>
+            <th>Status</th>
             <th>Available Slots</th>
             <th>Action</th>
         </tr>
@@ -117,6 +233,17 @@
             <td>{{ trek.start_date }}</td>
             <td>{{ trek.duration_days }}</td>
             <td>{{ trek.difficulty }}</td>
+            <td>
+                {% if trek.status == "pending" %}
+                <span class="color-orange">Bookings not started</span>
+                {% elif trek.status == "open" %}
+                <span class="color-green">Open for bookings</span>
+                {% elif trek.status == "closed" %}
+                <span class="color-red">Bookings closed</span>
+                {% elif trek.status == "completed" %}
+                <span class="color-green">Completed</span>
+                {% endif %}
+            </td>
             <td>{{ trek.available_slots - trek.participant_count }}</td>
             <td><a href="{{ url_for('user.view_trek', trek_id=trek.id) }}">View Trek</a></td>
         </tr>
@@ -130,7 +257,15 @@
 </div>
 
 <div class="treks">
+    <div class="heading-link">
     <h3 class="trek-information-heading">My Bookings</h3>
+    <a
+    href="{{ url_for('user.my_bookings', user_id=user.id) }}"
+    class="action-links"
+    >
+    View My Bookings
+    </a>
+    </div>
     {% if my_bookings %}
     <table class="trek-information">
         <tr>
@@ -138,7 +273,7 @@
             <th>Location</th>
             <th>Start Date</th>
             <th>Duration</th>
-            <th>Difficulty</th>
+            <th>Status</th>
             <th>Booked For</th>
             <th>Action</th>
         </tr>
@@ -154,8 +289,19 @@
             <td>{{ trek.location }}</td>
             <td>{{ trek.start_date }}</td>
             <td>{{ trek.duration_days }}</td>
-            <td>{{ trek.difficulty }}</td>
+            <td>
+                {% if trek.status == "pending" %}
+                <span class="color-orange">Bookings not started</span>
+                {% elif trek.status == "open" %}
+                <span class="color-green">Open for bookings</span>
+                {% elif trek.status == "closed" %}
+                <span class="color-red">Bookings closed</span>
+                {% elif trek.status == "completed" %}
+                <span class="color-green">Trek Completed</span>
+                {% endif %}
+            </td>
             <td>{{ booking.participants }}</td>
+            {% if not trek.status=='closed' %}
             <td>
                 <form action="{{ url_for('user.cancel_trek_booking', trek_id=trek.id) }}" method="POST">
                     <button 
@@ -163,8 +309,19 @@
                     class="cancel-button"
                     >
                     Cancel Booking
-                    </button>
+                </button>
                 </form>
+            </td>
+            {% else %}
+            <td>
+                <a
+                href="{{ url_for('user.view_trek', trek_id=trek.id) }}"
+                class="action-links"
+                >
+                    View Trek
+                </a>
+            </td>
+            {% endif %}
         </tr>
             {% endfor %}
         </table>
