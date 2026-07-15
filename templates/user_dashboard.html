@@ -171,12 +171,16 @@
 
     <div class="summary-card">
         <span class="summary-value">
-            <a
-            href="{{ url_for('user.view_trek', trek_id=upcoming_trek.id) }}"
-            class="inline-links"
-            >
-                {{ upcoming_trek.name if upcoming_trek else '-'}}
-            </a>
+            {% if upcoming_trek %}
+                <a
+                    href="{{ url_for('user.view_trek', trek_id=upcoming_trek.id) }}"
+                    class="inline-links"
+                >
+                    {{ upcoming_trek.name }}
+                </a>
+            {% else %}
+                -
+            {% endif %}
         </span>
         <span class="summary-label">Upcoming Trek</span>
     </div>

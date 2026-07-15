@@ -275,7 +275,7 @@ class="back-btn">
             <td>{{ booking.participants }}</td>
             <td>{{ booking.booking_date.strftime("%d %B %Y") }}</td>
             <td>
-                {% if trek.status=="open" and trek.status=="closed" %}
+                {% if trek.status=="open" or trek.status=="closed" %}
                 <form action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}" method="POST">
                     <button
                     class="cancel-booking-btn"

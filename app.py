@@ -3,6 +3,7 @@ from config import db, Config
 from models import Users, Treks, Bookings
 from routes import auth_bp, admin_bp, user_bp, staff_bp
 from werkzeug.security import generate_password_hash
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -31,8 +32,6 @@ with app.app_context():
 
         db.session.add(admin)
         db.session.commit()
-
-from sqlalchemy import func
 
 @app.route("/")
 def homepage():

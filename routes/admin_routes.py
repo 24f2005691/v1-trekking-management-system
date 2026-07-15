@@ -16,7 +16,10 @@ def dashboard():
 
     total_users = Users.query.filter_by(role="trekker").count()
 
-    total_staff = Users.query.filter_by(role="staff").count()
+    total_staff = Users.query.filter_by(
+        role="staff",
+        status="staff_approved"
+    ).count()
 
     total_bookings = Bookings.query.count()
 
@@ -81,7 +84,7 @@ def manage_staff():
     rejected_staff = Users.query.filter_by(
         role = "staff",
         status = "staff_rejected"
-    )
+    ).all()
 
     blacklisted_staff = Users.query.filter_by(
         role = "staff",
@@ -227,33 +230,46 @@ def blacklist_user(user_id):
     ).first()
 
     if not user:
-
-        flash('User not found.')
-        return redirect(
-            url_for('admin.dashboard')
-        )
+        flash("User not found.")
+        return redirect(url_for("admin.dashboard"))
 
     if user.status == "blacklisted":
         flash("User is already blacklisted.")
 
     else:
 
+        # Prevent blacklisting staff assigned to active treks
+        if user.role == "staff":
+
+            active_treks = Treks.query.filter(
+                Treks.assigned_staff_id == user.id,
+                Treks.status.in_(["pending", "open", "closed"])
+            ).count()
+
+            if active_treks > 0:
+                flash(
+                    "Cannot blacklist this staff member because they are assigned to active treks. Reassign those treks first."
+                )
+                return redirect(
+                    url_for(
+                        "admin.view_user",
+                        user_id=user.id
+                    )
+                )
+
         user.status = "blacklisted"
         db.session.commit()
         flash("User blacklisted successfully.")
 
     if user.role == "staff":
-
         return redirect(
             url_for(
-                'admin.view_user',
+                "admin.view_user",
                 user_id=user.id
             )
         )
 
-    return redirect(
-        url_for('admin.manage_users')
-    )
+    return redirect(url_for("admin.manage_users"))
 
 @admin_bp.route('/manage-treks')
 @admin_required
