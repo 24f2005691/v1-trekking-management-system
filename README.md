@@ -18,7 +18,7 @@ A role-based web application built using Flask that allows administrators, staff
 1. Clone the repository.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/24f2005691/v1-trekking-management-system
 cd Trekking-Management-System
 ```
 
